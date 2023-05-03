@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Inventory and Invoice Management System</title>
+    <style>
+      /* CSS styles for the header */
+      .header {
+        height: 60px;
+        background-color: #333;
+        color: #fff;
+        text-align: center;
+        padding-top: 10px;
+      }
+
+      /* CSS styles for the left navigation panel */
+      .left-panel {
+        width: 200px;
+        height: 100%;
+        background-color: #f1f1f1;
+        position: fixed;
+        top: 80px;
+        left: 8px;
+        overflow-x: hidden;
+        padding-top: 20px;
+        
+
+      }
+      
+      .left-panel button {
+        display: block;
+        width: 100%;
+        padding: 12px;
+        text-align: left;
+        font-size: 16px;
+        color: #818181;
+        border: none;
+        background-color: inherit;
+        cursor: pointer;
+      }
+      
+      .left-panel button:hover {
+        color: #f1f1f1;
+        background-color: #555;
+      }
+      
+      /* CSS styles for the main content area */
+      .main-content {
+        margin-left: 200px;
+        padding: 20px;
+      }
+         /* CSS styles for the item content area */
+      .item-content {
+        margin-left: 200px;
+        padding: 20px;
+      }
+
+      /* CSS styles for the footer */
+      .footer {
+        height: 40px;
+        background-color: #ccc;
+        text-align: center;
+        padding-top: 10px;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <h1>PNGUMIT STORE</h1>
+    </div>
+      <div class="left-panel">
+
+
+       <a href="{{ url_for('home') }}"> <button>Home</button></a> 
+       <a href="{{ url_for('item_page') }}"><button>Items</button></a> 
+       <a href="{{ url_for('notification_page') }}"><button>Notification</button></a> 
+       <a href="{{ url_for('inventory_page') }}"><button>Inventory</button></a> 
+       <a href="{{ url_for('customer_page') }}"><button>Customers</button></a> 
+       <a href="{{ url_for('report_page') }}"><button>Reports</button></a> 
+       <a href="{{ url_for('profile_page') }}"><button>Profiles</button></a> 
+       <a href="{{ url_for('help_page') }}"><button>Help</button></a> 
+
+      </div>
+
+    <!-- Home -->
+
+    <div class="main-content">
+      <h2 id="page-title">ITEM</h2>
+      <p>Welcome to PNGUMIT STORE inventory and invoice management system. Use the navigation panel on the left to access different features of the system.</p>
+    </div>
+ 
+
+    <div class="footer">
+      <p>&copy; 2023 PNGUMIT STORE. All rights reserved.</p>
+    </div>
+    
+ 
+      
+</body>
+
+</html>
+
+
+
+
+       
+
