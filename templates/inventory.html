@@ -46,13 +46,17 @@
       
       /* CSS styles for the main content area */
       .main-content {
-        margin-left: 200px;
-        padding: 20px;
+        padding-left: 200px;
       }
          /* CSS styles for the item content area */
       .item-content {
-        margin-left: 200px;
         padding: 20px;
+      }
+      table{
+        margin-left:200px;
+        margin-bottom: 100px;
+        width: 100%;
+        overflow: auto;
       }
 
       /* CSS styles for the footer */
@@ -76,9 +80,9 @@
 
 
        <a href="{{ url_for('home') }}"> <button>Home</button></a> 
-       <a href="{{ url_for('item_page') }}"><button>Items</button></a> 
-       <a href="{{ url_for('notification_page') }}"><button>Notification</button></a> 
-       <a href="{{ url_for('inventory_page') }}"><button>Inventory</button></a> 
+       <a href="{{ url_for('invoice_page') }}"><button>Invoice</button></a> 
+       <a href="{{ url_for('inventory_page') }}"><button>Inventory</button></a>
+       <a href="{{ url_for('notification_page') }}"><button>Notification</button></a>  
        <a href="{{ url_for('customer_page') }}"><button>Customers</button></a> 
        <a href="{{ url_for('report_page') }}"><button>Reports</button></a> 
        <a href="{{ url_for('profile_page') }}"><button>Profiles</button></a> 
@@ -92,7 +96,34 @@
       <h2 id="page-title">inventory</h2>
       <p>Welcome to PNGUMIT STORE inventory and invoice management system. Use the navigation panel on the left to access different features of the system.</p>
     </div>
- 
+    <table border="1" width="100%">
+      <thead>
+          <th>Service Tag</th>
+          <th>Item Name</th>
+          <th>Date Stocked</th>
+          <th>Hostname</th>
+          <th>User</th>
+          <th>Invoice Number</th>
+          <th>Accessories</th>
+          <th>Item Payment</th>
+          <th>Delivery Status</th>
+      </thead>
+      <tbody>
+          {% for item in inventory%}
+            <tr>
+            <td>{{item[0]}}</td>
+            <td>{{item[1]}}</td>
+            <td>{{item[2]}}</td>
+            <td>{{item[3]}}</td>
+            <td>{{item[4]}}</td>
+            <td>{{item[5]}}</td>
+            <td>{{item[6]}}</td>
+            <td>{{item[7]}}</td>
+            <td>{{item[8]}}</td>
+          </tr>
+          {% endfor %}
+      </tbody>
+    </table>
 
     <div class="footer">
       <p>&copy; 2023 PNGUMIT STORE. All rights reserved.</p>

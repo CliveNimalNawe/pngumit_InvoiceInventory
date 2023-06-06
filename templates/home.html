@@ -11,49 +11,14 @@
         color: #fff;
         text-align: center;
         padding-top: 10px;
+        position:fixed;
+        width: 100%;
       }
 
-      /* CSS styles for the search bar */
-.search-bar {
-  display: inline-block;
-  width: 300px;
-  height: 40px;
-  position: relative;
-  margin: 10px;
-  align-items: center; 
-
-}
-
-.search-input {
-  width: 100%;
-  height: 100%;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  padding: 5px 10px;
-  font-size: 16px;
-}
-
-.search-button {
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 60px;
-  height: 40px;
-  background-color: #333;
-  color: #fff;
-  border: 0;
-  border-radius: 0 5px 5px 0;
-  font-size: 16px;
-  cursor: pointer;
-}
-
-.search-button:hover {
-  background-color: #555;
-}
 
       /* CSS styles for the left navigation panel */
       .left-panel {
-        width: 200px;
+        width: 210px;
         height: 100%;
         background-color: #f1f1f1;
         position: fixed;
@@ -81,11 +46,63 @@
         color: #f1f1f1;
         background-color: #555;
       }
+
+      /* CSS styles for the search bar */
+      .search-bar {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+
+      }
+
+      .search-input {
+        width: 100%;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        padding: 5px 0 5px 10px;
+        font-size: 16px;
+        margin-left:10px;
+      }
+
+.search-button {
+  margin-left: 2px;
+  background-color: #333;
+  color: #fff;
+  border: none;
+  border-radius: 0 5px 5px 0;
+  cursor: pointer;
+}
+
+.search-button:hover {
+  background-color: #555;
+}
       
       /* CSS styles for the main content area */
       .main-content {
         margin-left: 200px;
-        padding: 20px;
+        padding: 65px 20px 20px 20px;
+      }
+
+      .card_container{
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-start;
+      }
+      .card{
+        
+        border: 1px solid grey;
+        background-color: gainsboro;
+        padding:5px;
+        border-radius: 4px;
+        margin-left:10px;
+        margin-bottom: 10px;
+        flex:0 0 150px;
+      }
+
+      .item_image{
+        margin:5px auto;
+        width: 100%;
+        height:80px;
       }
          /* CSS styles for the item content area */
       .item-content {
@@ -112,11 +129,14 @@
     </div>
       <div class="left-panel">
 
-
+        <div class="search-bar">
+          <input type="text" class="search-input" placeholder="Search...">
+          <button class="search-button">Search</button>
+        </div>
        <a href="{{ url_for('home') }}"> <button>Home</button></a> 
-       <a href="{{ url_for('item_page') }}"><button>Items</button></a> 
-       <a href="{{ url_for('notification_page') }}"><button>Notification</button></a> 
-       <a href="{{ url_for('inventory_page') }}"><button>Inventory</button></a> 
+       <a href="{{ url_for('invoice_page') }}"><button>Invoice</button></a> 
+       <a href="{{ url_for('inventory_page') }}"><button>Inventory</button></a>
+       <a href="{{ url_for('notification_page') }}"><button>Notification</button></a>  
        <a href="{{ url_for('customer_page') }}"><button>Customers</button></a> 
        <a href="{{ url_for('report_page') }}"><button>Reports</button></a> 
        <a href="{{ url_for('profile_page') }}"><button>Profiles</button></a> 
@@ -128,13 +148,25 @@
 
     <div class="main-content">
       <h2 id="page-title">HOME</h2>
+      <form action="{{ url_for('logout') }}" method="GET">
+        <button type="submit">Logout</button>
+    </form>
       <p>Welcome to PNGUMIT STORE inventory and invoice management system. Use the navigation panel on the left to access different features of the system.</p>
     
 
-     <div class="search-bar">
-      <input type="text" class="search-input" placeholder="Search...">
-      <button class="search-button">Search</button>
+    <h1>Stock left</h1>
+      <div class="card_container">
+        {% for item in data %}
+        <div class="card">
+          <h3>{{ item[0]}}</h3>
+          <img class="item_image"src="{{ item[1]}}" alt="{{ item[1]}}">
+          <h4>Current in Stock: {{ item[2]}}</h4>
+          <h4>Initial Total: {{ item[3]}}</h4>
+        </div>
+        {% endfor%}
+      </div>
     </div>
+    <div></div>
     </div >
       
 
