@@ -159,7 +159,7 @@
         {% for item in data %}
         <div class="card">
           <h3>{{ item[0]}}</h3>
-          <img class="item_image"src="{{ item[1]}}" alt="{{ item[1]}}">
+          <img class="item_image"src="../static/images/items/{{ item[1]}}" alt="{{ item[1]}}">
           <h4>Current in Stock: {{ item[2]}}</h4>
           <h4>Initial Total: {{ item[3]}}</h4>
         </div>
