@@ -108,15 +108,26 @@
           </div>
   
       {% for item in data %}
-      <div id="{{ item[1] }}{{ item[4] }}_div" class="item">
-      <input type="checkbox" name="{{ item[1] }}{{ item[4] }}" id="{{ item[1] }}{{ item[4] }}_checkbox" value="{{ item[1] }}{{ item[2] }}" class="item-checkbox">
-      <label for="{{ item[1] }}_checkbox">{{ item[0] }} {{ item[1] }} {{ item[2] }}</label>
-      <input type="text" name="{{ item[1] }}{{ item[4] }}_input" value="{{ item[0] }} {{ item[1] }} {{ item[2] }}" hidden>
-      <b><label for="price">Price Per Unit (K):</label></b>
-      <input type="number" value="{{ item[3] }}" id="{{ item[1] }}{{ item[4] }}_price" name="{{ item[1] }}{{ item[4] }}_price" class="item-input" readonly disabled>
-      <b><label for="quantity">Quantity:</label></b>
-      <input type="number" id="{{ item[1] }}{{ item[4] }}_quantity" name="{{ item[1] }}{{ item[4] }}_quantity" class="item-input" required disabled>
-    </div>
+        <div id="{{ item[1] }}{{ item[4] }}_div" class="form-row">
+          <div class="checkbox-label">
+            <input type="checkbox" name="{{ item[1] }}{{ item[4] }}" id="{{ item[1] }}{{ item[4] }}_checkbox" value="{{ item[1] }}{{ item[2] }}" class="item-checkbox">
+            <label for="{{ item[1] }}_checkbox">{{ item[0] }} {{ item[1] }} {{ item[2] }}</label>
+          </div>
+
+          <input type="text" name="{{ item[1] }}{{ item[4] }}_input" value="{{ item[0] }} {{ item[1] }} {{ item[2] }}" hidden>
+
+          <div class="input-label">
+            <b><label for="price">Price Per Unit (K):</label></b>
+            <input type="number" value="{{ item[3] }}" id="{{ item[1] }}{{ item[4] }}_price" name="{{ item[1] }}{{ item[4] }}_price" class="item-input" readonly disabled>
+          </div>
+
+          <div class="input-label">
+            <b><label for="quantity">Quantity:</label></b>
+            <input type="number" id="{{ item[1] }}{{ item[4] }}_quantity" name="{{ item[1] }}{{ item[4] }}_quantity" class="item-input" required disabled>
+          </div>
+
+        </div>
+
     {% endfor %}
           <button type="submit">Invoice</button>
       </form>
