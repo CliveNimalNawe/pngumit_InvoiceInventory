@@ -37,6 +37,10 @@
         border: none;
         background-color: inherit;
         cursor: pointer;
+        
+      }
+      .left-panel a{
+        text-decoration: none;
       }
       
       .left-panel button:hover {
@@ -51,7 +55,7 @@
       }
       /* Style the tab */
       .tab {
-        margin-left:220px;
+        /*margin-left:220px;*/
         overflow: hidden;
         border: 1px solid #ccc;
         background-color: #f1f1f1;
@@ -81,7 +85,7 @@
       /* Style the tab content */
       .tabcontent {
         display: none;
-        padding: 6px 20px 6px 210px;
+        padding: 6px 20px 6px 20px;
         border: 1px solid #ccc;
         border-top: none;
       }
@@ -166,80 +170,80 @@
 
     <div class="main-content">
       <h2 id="page-title">INVOICE</h2>
-      <p>Welcome to PNGUMIT STORE inventory and invoice management system. Use the navigation panel on the left to access different features of the system.</p>
+      <div class="tab">
+        <button class="tablinks" onclick="openCity(event, 'invoice_records')" id="defaultOpen">Invoice Records</button>
+        <button class="tablinks" onclick="openCity(event, 'new_invoice')">New Invoice</button>
+      </div>
+      <div id="invoice_records" class="tabcontent">
+        <table border="1" width="100%">
+          <thead>
+              <th>Invoice Number</th>
+              <th>Date and Time</th>
+              <th>Mission Entity</th>
+              <th>Mission Department</th>
+              <th>IT Contact</th>
+              <th>Mission Contact</th>
+              <th>Total Invoice Amount</th>
+              <th>PDF for Invoice</th>
+          </thead>
+          <tbody>
+              {% for item in allInvoices%}
+                <tr>
+                <td>{{item[0]}}</td>
+                <td>{{item[1]}}</td>
+                <td>{{item[2]}}</td>
+                <td>{{item[3]}}</td>
+                <td>{{item[4]}}</td>
+                <td>{{item[5]}}</td>
+                <td>{{item[6]}}</td>
+                <td>{{item[7]}}</td>
+              </tr>
+              {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <div id="new_invoice" class="tabcontent">
+      <form method="POST" action="{{url_for('preview_invoice')}}" class="invoice_form" id="form1">
+          <div>
+            <label for="inv_no">Invoice Number:</label>
+            <input type="text" name="inv_no" value="{{inv}}" readonly> 
+          </div>
+          <div>
+            <input type="text" name="it_contact" value="{{Uname.id}}" hidden>
+            <label for="contact_person">Contact Person:</label>
+            <input type="text" name="contact_person" required>
+          </div>
+          <label for="mission_entity">Mission Entity:</label>
+          
+          
+          <select name="mission_entity" required id="dropdown">
+            <option value="" disabled selected>Choose</option>
+            {% for item in data1 %}
+            <option value="{{ item.id }}">{{item.name}}</option>
+            {% endfor%}
+          </select>
+          <input id="address" name="address" value="" hidden>
+          <div>
+            <label for="mission_dept">Mission Department:</label>
+            <input type="text" name="mission_dept">
+          </div>
+  
+      {% for item in data %}
+      <div id="{{ item[1] }}{{ item[4] }}_div" class="item">
+      <input type="checkbox" name="{{ item[1] }}{{ item[4] }}" id="{{ item[1] }}{{ item[4] }}_checkbox" value="{{ item[1] }}{{ item[2] }}" class="item-checkbox">
+      <label for="{{ item[1] }}_checkbox">{{ item[0] }} {{ item[1] }} {{ item[2] }}</label>
+      <input type="text" name="{{ item[1] }}{{ item[4] }}_input" value="{{ item[0] }} {{ item[1] }} {{ item[2] }}" hidden>
+      <b><label for="price">Price Per Unit (K):</label></b>
+      <input type="number" value="{{ item[3] }}" id="{{ item[1] }}{{ item[4] }}_price" name="{{ item[1] }}{{ item[4] }}_price" class="item-input" readonly disabled>
+      <b><label for="quantity">Quantity:</label></b>
+      <input type="number" id="{{ item[1] }}{{ item[4] }}_quantity" name="{{ item[1] }}{{ item[4] }}_quantity" class="item-input" required disabled>
     </div>
-    <div class="tab">
-      <button class="tablinks" onclick="openCity(event, 'invoice_records')" id="defaultOpen">Invoice Records</button>
-      <button class="tablinks" onclick="openCity(event, 'new_invoice')">New Invoice</button>
+    {% endfor %}
+          <button type="submit">Invoice</button>
+      </form>
     </div>
-    <div id="invoice_records" class="tabcontent">
-      <table border="1" width="100%">
-        <thead>
-            <th>Invoice Number</th>
-            <th>Date and Time</th>
-            <th>Mission Entity</th>
-            <th>Mission Department</th>
-            <th>IT Contact</th>
-            <th>Mission Contact</th>
-            <th>Total Invoice Amount</th>
-            <th>PDF for Invoice</th>
-        </thead>
-        <tbody>
-            {% for item in allInvoices%}
-              <tr>
-              <td>{{item[0]}}</td>
-              <td>{{item[1]}}</td>
-              <td>{{item[2]}}</td>
-              <td>{{item[3]}}</td>
-              <td>{{item[4]}}</td>
-              <td>{{item[5]}}</td>
-              <td>{{item[6]}}</td>
-              <td>{{item[7]}}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-      </table>
     </div>
-    <div id="new_invoice" class="tabcontent">
-    <form method="POST" action="{{url_for('preview_invoice')}}" class="invoice_form" id="form1">
-        <div>
-          <label for="inv_no">Invoice Number:</label>
-          <input type="text" name="inv_no" value="{{inv}}" readonly> 
-        </div>
-        <div>
-          <input type="text" name="it_contact" value="{{Uname.id}}" hidden>
-          <label for="contact_person">Contact Person:</label>
-          <input type="text" name="contact_person" required>
-        </div>
-        <label for="mission_entity">Mission Entity:</label>
-        
-        
-        <select name="mission_entity" required id="dropdown">
-          <option value="" disabled selected>Choose</option>
-          {% for item in data1 %}
-          <option value="{{ item.id }}">{{item.name}}</option>
-          {% endfor%}
-        </select>
-        <input id="address" name="address" value="" hidden>
-        <div>
-          <label for="mission_dept">Mission Department:</label>
-          <input type="text" name="mission_dept">
-        </div>
-
-    {% for item in data %}
-    <div id="{{ item[1] }}{{ item[4] }}_div" class="item">
-    <input type="checkbox" name="{{ item[1] }}{{ item[4] }}" id="{{ item[1] }}{{ item[4] }}_checkbox" value="{{ item[1] }}{{ item[2] }}" class="item-checkbox">
-    <label for="{{ item[1] }}_checkbox">{{ item[0] }} {{ item[1] }} {{ item[2] }}</label>
-    <input type="text" name="{{ item[1] }}{{ item[4] }}_input" value="{{ item[0] }} {{ item[1] }} {{ item[2] }}" hidden>
-    <b><label for="price">Price Per Unit (K):</label></b>
-    <input type="number" value="{{ item[3] }}" id="{{ item[1] }}{{ item[4] }}_price" name="{{ item[1] }}{{ item[4] }}_price" class="item-input" readonly disabled>
-    <b><label for="quantity">Quantity:</label></b>
-    <input type="number" id="{{ item[1] }}{{ item[4] }}_quantity" name="{{ item[1] }}{{ item[4] }}_quantity" class="item-input" required disabled>
-  </div>
-  {% endfor %}
-        <button type="submit">Invoice</button>
-    </form>
-  </div>
+    
     <div class="footer">
       <p>&copy; 2023 PNGUMIT STORE. All rights reserved.</p>
     </div>
