@@ -158,7 +158,7 @@ def help_page():
 @app.route("/report-page")
 @login_required
 def report_page():
-    return render_template("report-page.html")
+    return render_template("report.html")
 
 @app.route("/notification-page")
 @login_required
@@ -170,10 +170,10 @@ def notification_page():
 def item_page():
     return render_template("item.html")
   
-@app.route("/item-page")
+@app.route("/customer-page")
 @login_required
 def customer_page():
-    return render_template("item.html")
+    return render_template("customer.html")
 
 @app.route("/logout")
 def logout():
