@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Preview</title>
+</head>
+<body>
+  <h1>Preview</h1>
+  
+  <!-- Display the previewed data -->
+  <p>Invoice Number: {{ inv }}</p>
+  <p>IT Contact: {{ it }}</p>
+  <p>Mission Contact: {{missContact}}</p>
+  <p>Bill To: {{ bill }}</p>
+  <p>Address: {{add}}</p>
+  {% for item in dlist %}
+  <div>
+    <hr>
+    <p>Description: {{ item['description'] }}</p>
+    <p>Price: {{ item['price']}}</p>
+    <p>Quantity: {{ item['quantity'] }}</p>
+    <hr>
+  </div>
+{% endfor %}
+<p>Total Cost: {{totalcost}}</p>
+
+  <!-- ... display other details -->
+  
+  <!-- Form for saving the data -->
+  <form method="POST" action="{{url_for('invoice_entry')}}">
+    <!-- Include hidden fields to pass the data to the save_pdf function -->
+    <input type="hidden" name="inv" value="{{ inv }}">
+    <input type="hidden" name="it" value="{{ it }}">
+    <input type="hidden" name="missContact" value="{{ missContact }}">
+    <input type="hidden" name="dept" value="{{ dept }}">
+    <input type="hidden" name="bill" value="{{ bill }}">
+    <input type="hidden" name="add" value="{{ add }}">
+    <input type="hidden" name="cost" value=" {{totalcost}}">
+    <!--
+    {% for item in dlist %}
+    {%set idx=1 %}
+    <input type="hidden" name="description" value="{{ item['description']}}">
+    <input type="hidden" name="price" value="{{ item['price']}}" >
+    <input type="hidden" name="quantity" value="{{ item['quantity'] }}">
+    {% endfor %}
+    -->
+    <!-- ... include other hidden fields for other details -->
+    
+    <!-- Save button -->
+    <button type="submit" method="POST">Save</button>
+    
+    <!-- Cancel button -->
+    <a href="/">Cancel</a>
+  </form>
+</body>
+</html>
