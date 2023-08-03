@@ -84,8 +84,8 @@
                 <td>{{item[2]}}</td>
                 <td>{{item[3]}}</td>
                 <td>{{item[4]}}</td>
-                <td>{{item[5]}}</td>
-                <td>{{item[6]}}</td>
+                <td>{{item[5].title()}}</td>
+                <td>PGK {{item[6]}}</td>
                 <td>{{item[7]}} <a href="{{ url_for('download_pdf', inv=item[0])}}">Download</a></td>
               </tr>
               {% endfor %}
