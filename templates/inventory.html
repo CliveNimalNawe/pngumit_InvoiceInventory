@@ -15,6 +15,10 @@
   <body>
     <div class="header">
       <h1>PNGUMIT STORE</h1>
+      <div class="search-bar">
+        <input type="text" class="search-input" placeholder="Search...">
+        <button class="search-button">Search</button>
+      </div>
     </div>
     <div class="left-panel">
 
@@ -39,7 +43,7 @@
         <button class="tablinks" onclick="openCity(event, 'new_invoice')">New Item</button>
       </div>
       <div id="invoice_records" class="tabcontent">
-        <table border="1" width="100%">
+        <table border="1" width="100%" id="myTable" class="display">
           <thead>
               <th>Service Tag</th>
               <th>Item Name</th>

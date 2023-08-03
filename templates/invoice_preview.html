@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Inventory and Invoice Management System</title>
+    <link rel="stylesheet" href="{{url_for ('static', filename='css/style.css')}}">
+  </head>
+  <body>
+    <div class="header">
+      <h1>PNGUMIT STORE</h1>
+    </div>
+    <div class="left-panel">
+
+
+        <a href="{{ url_for('home') }}"> <button>Home</button></a> 
+        <a href="{{ url_for('invoice_page') }}"><button>Invoice</button></a>  
+        <a href="{{ url_for('inventory_page') }}"><button>Inventory</button></a>
+        <a href="{{ url_for('notification_page') }}"><button>Notification</button></a>  
+        <a href="{{ url_for('customer_page') }}"><button>Customers</button></a> 
+        <a href="{{ url_for('report_page') }}"><button>Reports</button></a> 
+        <a href="{{ url_for('profile_page') }}"><button>Profiles</button></a> 
+        <a href="{{ url_for('help_page') }}"><button>Help</button></a> 
+ 
+       </div>
+    <!-- Home -->
+
+    <div class="main-content">
+      <h2 id="page-title">Confirm Details</h2>
+      
+      <h4>Invoice Number: <span id="red-font">{{ session['inv'] }}</span></h4>
+      <div>
+        <p>Bill To:</p>
+        <p>{{ session['bill'] }} - {{ session['dept']}}</p>
+        <p>{{ session['add'] }}</p>
+      </div>
+
+      <div>
+        <p>Mission Contact: {{ session['missContact'] }}</p>
+        <p>IT Contact: {{ session['it'] }}</p>
+      </div>
+
+      <div>
+        <table border="1px" width="100%">
+            <tr>
+              <th>Quantity</th>
+              <th>Description</th>
+              <th>Unit Price</th>
+              <th>Total Price</th>
+            </tr>
+           
+            {% for item in session['dlist']%}
+              <tr>
+                <td>{{ item['quantity'] }}</td>
+                <td>{{ item['description']}}</td>
+                <td>{{ item['price'] }}</td>
+                <td>{{ session['totalprice'][loop.index0]}}</td>
+              </tr>
+            {% endfor %}
+            <tr>
+              <th></th>
+              <th></th>
+              <th>Total:</th>
+              <th> {{ session['totalcost'] }}</th>
+            </tr>
+          </table>
+      </div>
+
+      <div class="controls">
+        <!-- Cancel button -->
+        <button><a href="{{url_for('generate_pdf')}}">Confirm</a></button>
+        <a href="{{url_for('cancel')}}">Cancel</a>
+    </div>
+ 
+    <div class="footer">
+      <p>&copy; 2023 PNGUMIT STORE. All rights reserved.</p>
+    </div>
+    
+ 
+      
+</body>
+
+</html>
+

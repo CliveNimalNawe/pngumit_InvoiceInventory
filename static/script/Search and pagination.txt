@@ -1,0 +1,44 @@
+id="mytable"
+
+
+
+
+
+
+
+<!-- ################# Javascript for the table operations #################################################-->
+<script>
+  $(document).ready(function() {
+    // Initialize DataTable
+    var table = $('#mytable').DataTable({
+      "pagingType": "full_numbers"
+    });
+
+    // Add search functionality
+    $('#searchInput').on('keyup', function() {
+      table.search($(this).val()).draw();
+    });
+
+    // Handle bulk actions
+    $('#bulkAction').on('change', function() {
+      var action = $(this).val();
+      var selectedRows = $('input[name="row[]"]:checked');
+      var ids = [];
+
+      selectedRows.each(function() {
+        ids.push($(this).val());
+      });
+
+      if (action === 'delete') {
+        // Perform delete action
+        console.log('Deleting rows with IDs: ' + ids);
+      } else if (action === 'archive') {
+        // Perform archive action
+        console.log('Archiving rows with IDs: ' + ids);
+      }
+
+      // Reset bulk actions dropdown
+      $('#bulkAction').val('');
+    });
+  });
+</script>

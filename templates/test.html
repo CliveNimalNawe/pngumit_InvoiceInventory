@@ -1,81 +1,33 @@
+<!-- confirm.html -->
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
-  <style>
-    .form-row {
-  display: flex;
-  align-items: center;
-  margin-bottom: 10px;
-}
-
-.checkbox-label {
-  display: flex;
-  align-items: center;
-  margin-right: 10px;
-}
-
-.input-label {
-  display: flex;
-  flex-direction: column;
-  margin-right: 10px;
-}
-
-input[type="checkbox"] {
-  margin-right: 5px;
-}
-
-label {
-  margin-bottom: 5px;
-}
-  </style>
+    <title>Confirmation Popup</title>
 </head>
 <body>
-  <div class="form-row">
-    <div class="checkbox-label">
-      <input type="checkbox" id="checkbox1">
-      <label for="checkbox1">Checkbox Label 1</label>
-    </div>
-    <div class="input-label">
-      <label for="input1">Input Label 1</label>
-      <input type="text" id="input1">
-    </div>
-    <div class="input-label">
-      <label for="input2">Input Label 2</label>
-      <input type="text" id="input2">
-    </div>
-  </div>
 
-  <div class="form-row">
-    <div class="checkbox-label">
-      <input type="checkbox" id="checkbox1">
-      <label for="checkbox1">Checkbox Label 1 this is a test</label>
-    </div>
-    <div class="input-label">
-      <label for="input1">Input Label 1</label>
-      <input type="text" id="input1">
-    </div>
-    <div class="input-label">
-      <label for="input2">Input Label 2</label>
-      <input type="text" id="input2">
-    </div>
-  </div>
+<!-- Your form or action that requires confirmation -->
+<form action="/process" method="post">
+    <!-- Your form fields here -->
+    <p>Item: {{ item_name }}</p>
+    <p>Quantity: {{ item_quantity }}</p>
+    <p>Price: {{ item_price }}</p>
+    <input type="submit" value="Submit" onclick="return showConfirmation();">
+</form>
 
-  <div class="form-row">
-    <div class="checkbox-label">
-      <input type="checkbox" id="checkbox1">
-      <label for="checkbox1">Checkbox Label 1</label>
-    </div>
-    <div class="input-label">
-      <label for="input1">Input Label 1</label>
-      <input type="text" id="input1">
-    </div>
-    <div class="input-label">
-      <label for="input2">Input Label 2</label>
-      <input type="text" id="input2">
-    </div>
-  </div>
+<!-- JavaScript to show the confirmation popup -->
+<script>
+    function showConfirmation() {
+        // Show the confirmation dialog with the rendered variables
+        var confirmationMessage = "Are you sure you want to proceed?\n"
+                                + "Item: " + "{{ item_name }}" + "\n"
+                                + "Quantity: " + "{{ item_quantity }}" + "\n"
+                                + "Price: " + "{{ item_price }}";
+
+        var result = confirm(confirmationMessage);
+        return result;
+    }
+</script>
+
 </body>
 </html>

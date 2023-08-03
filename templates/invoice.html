@@ -3,8 +3,13 @@
   <head>
     <meta charset="UTF-8">
     <title>Inventory and Invoice Management System</title>
+    
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='DataTables/datatables.min.css')}}">    
+    
+    <script src="{{url_for('static', filename='script/jquery3.6.0.min.js')}}"></script>
+    <script src="{{url_for('static', filename='DataTables/datatables.min.js')}}"></script>
+    
     <script>
       
       $(document).ready(function() {
@@ -30,6 +35,10 @@
   <body>
     <div class="header">
       <h1>PNGUMIT STORE</h1>
+      <div class="search-bar">
+        <input type="text" class="search-input" placeholder="Search...">
+        <button class="search-button">Search</button>
+      </div>
     </div>
     <div class="left-panel">
 
@@ -54,8 +63,9 @@
         <button class="tablinks" onclick="openCity(event, 'new_invoice')">New Invoice</button>
       </div>
       <div id="invoice_records" class="tabcontent">
-        <table border="1" width="100%">
+        <table id="myTable" class="display">
           <thead>
+              <tr>
               <th>Invoice Number</th>
               <th>Date and Time</th>
               <th>Mission Entity</th>
@@ -64,6 +74,7 @@
               <th>Mission Contact</th>
               <th>Total Invoice Amount</th>
               <th>PDF for Invoice</th>
+              </tr>
           </thead>
           <tbody>
               {% for item in allInvoices%}
@@ -75,7 +86,7 @@
                 <td>{{item[4]}}</td>
                 <td>{{item[5]}}</td>
                 <td>{{item[6]}}</td>
-                <td>{{item[7]}}</td>
+                <td>{{item[7]}} <a href="{{ url_for('download_pdf', inv=item[0])}}">Download</a></td>
               </tr>
               {% endfor %}
           </tbody>
@@ -153,6 +164,10 @@
           });
         }
       });
+
+      $(document).ready( function () {
+      $('#myTable').DataTable();
+} );
     </script>
     <script>
       function openCity(evt, cityName) {
@@ -180,7 +195,7 @@
       // Get the element with id="defaultOpen" and click on it
       document.getElementById("defaultOpen").click();
       </script>
-      
+
 </body>
 
 </html>

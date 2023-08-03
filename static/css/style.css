@@ -1,4 +1,7 @@
-  /* CSS styles for the header */
+body{
+  margin:0px;
+}
+/* CSS styles for the header */
   .header {
     width:100%;
     background-color: #333;
@@ -15,7 +18,7 @@
     height: 100%;
     background-color: #f1f1f1;
     position: fixed;
-    top: 90px;
+    top: 80px;
     left: 8px;
     overflow-x: hidden;
     padding-top: 20px;
@@ -97,14 +100,16 @@
 
      /* CSS styles for the search bar */
      .search-bar {
-        display: flex;
+        display: inline-block;
         align-items: center;
         margin-bottom: 20px;
-
+        position: fixed;
+        top: 30px;
+        right: 30px;
       }
 
       .search-input {
-        width: 100%;
+        width: 60%;
         border: 1px solid #ccc;
         border-radius: 5px;
         padding: 5px 0 5px 10px;
@@ -113,9 +118,11 @@
       }
 
 .search-button {
+  width: 20%;
+  height: 28px;
   margin-left: 2px;
-  background-color: #333;
-  color: #fff;
+  background-color: gainsboro;
+  color: black;
   border: none;
   border-radius: 0 5px 5px 0;
   cursor: pointer;
@@ -123,6 +130,7 @@
 
 .search-button:hover {
   background-color: #555;
+  color:white;
 }
 /* CSS styles for the item content area */
   .item-content {
@@ -177,6 +185,9 @@ input[type="checkbox"] {
 
 label {
   margin-bottom: 5px;
+}
+#red-font{
+  color: red;
 }
 
   /* CSS styles for the footer */
