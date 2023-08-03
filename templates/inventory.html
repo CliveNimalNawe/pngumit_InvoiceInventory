@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <title>Inventory and Invoice Management System</title>
     <link rel="stylesheet" href="{{url_for ('static', filename='css/style.css')}}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='DataTables/datatables.min.css')}}">    
+    
+    <script src="{{url_for('static', filename='script/jquery3.6.0.min.js')}}"></script>
+    <script src="{{url_for('static', filename='DataTables/datatables.min.js')}}"></script>
     <style>
       table{
         margin-bottom: 100px;
@@ -26,8 +30,8 @@
        <a href="{{ url_for('home') }}"> <button>Home</button></a> 
        <a href="{{ url_for('invoice_page') }}"><button>Invoice</button></a> 
        <a href="{{ url_for('inventory_page') }}"><button>Inventory</button></a>
-       <a href="{{ url_for('notification_page') }}"><button>Notification</button></a>  
        <a href="{{ url_for('customer_page') }}"><button>Customers</button></a> 
+       <a href="{{ url_for('notification_page') }}"><button>Notification</button></a>  
        <a href="{{ url_for('report_page') }}"><button>Reports</button></a> 
        <a href="{{ url_for('profile_page') }}"><button>Profiles</button></a> 
        <a href="{{ url_for('help_page') }}"><button>Help</button></a> 
@@ -43,8 +47,9 @@
         <button class="tablinks" onclick="openCity(event, 'new_invoice')">New Item</button>
       </div>
       <div id="invoice_records" class="tabcontent">
-        <table border="1" width="100%" id="myTable" class="display">
+        <table id="myTable" class="display">
           <thead>
+              <tr>
               <th>Service Tag</th>
               <th>Item Name</th>
               <th>Date Stocked</th>
@@ -54,19 +59,20 @@
               <th>Accessories</th>
               <th>Item Payment</th>
               <th>Delivery Status</th>
+            </tr>
           </thead>
           <tbody>
               {% for item in inventory%}
                 <tr>
                 <td>{{item[0]}}</td>
-                <td>{{item[1]}}</td>
+                <td>{{item[1].title()}}</td>
                 <td>{{item[2]}}</td>
                 <td>{{item[3]}}</td>
                 <td>{{item[4]}}</td>
                 <td>{{item[5]}}</td>
                 <td>{{item[6]}}</td>
-                <td>{{item[7]}}</td>
-                <td>{{item[8]}}</td>
+                <td>{{item[7].title()}}</td>
+                <td>{{item[8].title()}}</td>
               </tr>
               {% endfor %}
           </tbody>
@@ -105,6 +111,10 @@
     <script>
       // Get the element with id="defaultOpen" and click on it
       document.getElementById("defaultOpen").click();
+
+      $(document).ready( function () {
+      $('#myTable').DataTable();
+} );
     </script>
  
 </body>
