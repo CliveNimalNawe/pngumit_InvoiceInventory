@@ -3,7 +3,7 @@ from flask_login import LoginManager, login_user, logout_user, login_required, c
 from user import User
 from database_initializer import initialize_database
 from data_fetch import DataFetcher
-from query import qty_query, sold_query, id_query, creds, items, mission, names, lastInv, invoice, allInv, inventory, inv_itm, delete_details, delete_invoice, inv_basic, inv_details, add
+from query import qty_query, sold_query, id_query, creds, items, mission, names, lastInv, invoice, allInv, inventory, inv_itm, delete_details, delete_invoice, inv_basic, inv_details, add, entities, newEntity
 import json
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
@@ -177,7 +177,11 @@ def item_page():
 @app.route("/customer-page")
 @login_required
 def customer_page():
-    return render_template("customer.html")
+    db_connection = app.config['database']
+    data_fetcher = DataFetcher(database=db_connection)
+    # You can fetch other user data as needed
+    entitydata=data_fetcher.fetch_data(entities)
+    return render_template("customer.html", customers=entitydata)
 
 @app.route("/logout")
 def logout():
@@ -503,6 +507,25 @@ def download_pdf(inv):
     print(session['totalprice'])
     response = generate_pdf()    
     return response
+
+@app.route('/add-customer', methods=['GET', 'POST'])
+def add_customer():
+    if request.method == 'POST':
+        # Collect the necessary information from the form
+        id = request.form.get('mission_id')
+        entity = request.form.get('mission_entity')
+        address = request.form.get('address')
+
+        db_conn = app.config['database']
+        data_fetcher = DataFetcher(database=db_conn)
+        data=(id, entity, address)
+        #Save reponse from database entry
+        result=data_fetcher.insert_data(newEntity, data)    
+        print(id, entity, address)
+        return redirect(url_for('customer_page'))
+
+    return render_template('input.html')
+
 
 if__name__ = '__main__'
 

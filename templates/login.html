@@ -4,10 +4,11 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Login</title>
 </head>
-<body>
-    <form method="POST" action="{{ url_for('login') }}">
+<body style="padding: 100px;">
+    <form method="POST" action="{{ url_for('login') }}" style="border: 1px solid gainsboro; width:200px; height: 250px; margin: auto;">
+        <h2>Login</h2>
         <!-- Form fields for username and password -->
         <input type="text" name="username" placeholder="Username">
         <input type="password" name="password" placeholder="Password">

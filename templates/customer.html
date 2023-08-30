@@ -4,43 +4,126 @@
     <meta charset="UTF-8">
     <title>Inventory and Invoice Management System</title>
     <link rel="stylesheet" href="{{url_for ('static', filename='css/style.css')}}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='DataTables/datatables.min.css')}}">    
+    
+    <script src="{{url_for('static', filename='script/jquery3.6.0.min.js')}}"></script>
+    <script src="{{url_for('static', filename='DataTables/datatables.min.js')}}"></script>
+    <style>
+      table{
+        margin-bottom: 100px;
+        width: 100%;
+        overflow: auto;
+      }
+    </style>
   </head>
   <body>
     <div class="header">
       <h1>PNGUMIT STORE</h1>
-      <div class="search-bar">
-        <input type="text" class="search-input" placeholder="Search...">
-        <button class="search-button">Search</button>
-      </div>
     </div>
     <div class="left-panel">
 
 
-      <a href="{{ url_for('home') }}"> <button>Home</button></a> 
-      <a href="{{ url_for('invoice_page') }}"><button>Invoice</button></a> 
-      <a href="{{ url_for('inventory_page') }}"><button>Inventory</button></a>
-      <a href="{{ url_for('customer_page') }}"><button>Customers</button></a> 
-      <a href="{{ url_for('notification_page') }}"><button>Notification</button></a>  
-      <a href="{{ url_for('report_page') }}"><button>Reports</button></a> 
-      <a href="{{ url_for('profile_page') }}"><button>Profiles</button></a> 
-      <a href="{{ url_for('help_page') }}"><button>Help</button></a> 
-
+       <a href="{{ url_for('home') }}"> <button>Home</button></a> 
+       <a href="{{ url_for('invoice_page') }}"><button>Invoice</button></a> 
+       <a href="{{ url_for('inventory_page') }}"><button>Inventory</button></a>
+       <a href="{{ url_for('customer_page') }}"><button>Customers</button></a> 
+       <a href="{{ url_for('notification_page') }}"><button>Notification</button></a>  
+       <a href="{{ url_for('report_page') }}"><button>Reports</button></a> 
+       <a href="{{ url_for('profile_page') }}"><button>Profiles</button></a> 
+       <a href="{{ url_for('help_page') }}"><button>Help</button></a> 
 
       </div>
+
     <!-- Home -->
 
     <div class="main-content">
-      <h2 id="page-title">CUSTOMER</h2>
-      <p>Welcome to PNGUMIT STORE inventory and invoice management system. Use the navigation panel on the left to access different features of the system.</p>
-    </div>
- 
+      <h2 id="page-title">Customers</h2>
+      <div class="tab">
+        <button class="tablinks" onclick="openCity(event, 'invoice_records')" id="defaultOpen">Customer Records</button>
+        <button class="tablinks" onclick="openCity(event, 'new_invoice')">New Customer</button>
+      </div>
+      <div id="invoice_records" class="tabcontent">
+        <table id="myTable" class="display">
+          <thead>
+              <tr>
+              <th>Mission Code</th>
+              <th>Mission Name</th>
+              <th>Address</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+              {% for item in customers%}
+                <tr>
+                <td>{{item[0]}}</td>
+                <td>{{item[1].title()}}</td>
+                <td>{{item[2]}}</td>
+                <td> <a href="">Update</a> <a href="">Delete</a></td>
+              </tr>
+              {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <div id="new_invoice" class="tabcontent">
+        <form method="POST" action="{{url_for('add_customer')}}" class="new_customer_form" id="form1">
+          
+          <div>
+            <label for="mission_id">Misson Code:</label>
+            <input type="text" name="mission_id" required>
+          </div>
 
+          <div>
+            <label for="mission_entity">Misson Name:</label>
+            <input type="text" name="mission_entity" required>
+          </div>
+
+          <div class="address">
+            <label for="address">Address:</label>
+            <input type="text" name="address" id="" required>
+          </div>
+          <button type="submit">New Customer</button>
+        </form>
+        </div>
+
+         
+      </div>
+    </div>
+    
     <div class="footer">
       <p>&copy; 2023 PNGUMIT STORE. All rights reserved.</p>
     </div>
-    
- 
+    <script>
+      function openCity(evt, cityName) {
+  // Declare all variables
+  var i, tabcontent, tablinks;
+
+  // Get all elements with class="tabcontent" and hide them
+  tabcontent = document.getElementsByClassName("tabcontent");
+  for (i = 0; i < tabcontent.length; i++) {
+    tabcontent[i].style.display = "none";
+  }
+
+  // Get all elements with class="tablinks" and remove the class "active"
+  tablinks = document.getElementsByClassName("tablinks");
+  for (i = 0; i < tablinks.length; i++) {
+    tablinks[i].className = tablinks[i].className.replace(" active", "");
+  }
+
+  // Show the current tab, and add an "active" class to the button that opened the tab
+  document.getElementById(cityName).style.display = "block";
+  evt.currentTarget.className += " active";
+}
+    </script>
+    <script>
+      $(document).ready( function () {
+      $('#myTable').DataTable();
+      } );
+      // Get the element with id="defaultOpen" and click on it
+      document.getElementById("defaultOpen").click();
+
       
+    </script>
+ 
 </body>
 
 </html>

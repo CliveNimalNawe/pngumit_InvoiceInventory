@@ -19,10 +19,6 @@
   <body>
     <div class="header">
       <h1>PNGUMIT STORE</h1>
-      <div class="search-bar">
-        <input type="text" class="search-input" placeholder="Search...">
-        <button class="search-button">Search</button>
-      </div>
     </div>
     <div class="left-panel">
 
@@ -52,6 +48,7 @@
               <tr>
               <th>Service Tag</th>
               <th>Item Name</th>
+              <th> Item Model</th>
               <th>Date Stocked</th>
               <th>Hostname</th>
               <th>User</th>
@@ -66,6 +63,7 @@
                 <tr>
                 <td>{{item[0]}}</td>
                 <td>{{item[1].title()}}</td>
+                <td>{{(item[9])}}</td>
                 <td>{{item[2]}}</td>
                 <td>{{item[3]}}</td>
                 <td>{{item[4]}}</td>
@@ -109,12 +107,12 @@
 }
     </script>
     <script>
-      // Get the element with id="defaultOpen" and click on it
-      document.getElementById("defaultOpen").click();
-
+      
       $(document).ready( function () {
       $('#myTable').DataTable();
-} );
+      } );
+      // Get the element with id="defaultOpen" and click on it
+      document.getElementById("defaultOpen").click();
     </script>
  
 </body>
