@@ -657,6 +657,12 @@ def change_password():
 
     return redirect(url_for('profile_page'))
 
+@app.route('/catalog-page')
+@login_required
+def catalog_page():
+    return render_template('catalog.html')
+
+
 if__name__ = '__main__'
 
 app.run(host='0.0.0.0', debug = True)
