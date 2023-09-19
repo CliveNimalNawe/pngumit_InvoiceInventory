@@ -39,3 +39,6 @@ delete_invoice="DELETE FROM `invoices` WHERE inv_no = %s"
 entities= "SELECT * FROM mission_entity"
 newEntity = "INSERT INTO `mission_entity` (`mission_id`, `mission_name`, `mission_addr`) VALUES (%s, %s, %s);"
 
+#Update
+update = "UPDATE `inventory` SET `flag` = %s WHERE (`itm_servtag` = %s);"
+

@@ -1,9 +1,11 @@
-from flask import Flask, redirect, render_template, flash, render_template_string, url_for, request, make_response, jsonify, session, Response
-from flask_login import LoginManager, login_user, logout_user, login_required, current_user
+from flask import Flask, redirect, render_template, flash, url_for, request, jsonify, session, Response
+from flask_login import LoginManager, login_user, logout_user, login_required, current_user, UserMixin
+from flask_bcrypt import Bcrypt
+from werkzeug.security import generate_password_hash, check_password_hash
 from user import User
 from database_initializer import initialize_database
 from data_fetch import DataFetcher
-from query import qty_query, sold_query, id_query, creds, items, mission, names, lastInv, invoice, allInv, inventory, inv_itm, delete_details, delete_invoice, inv_basic, inv_details, add, entities, newEntity
+from query import qty_query, sold_query, id_query, creds, items, mission, names, lastInv, invoice, allInv, inventory, inv_itm, delete_details, delete_invoice, inv_basic, inv_details, add, entities, newEntity, update
 import json
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
@@ -11,14 +13,18 @@ import decimal
 import datetime
 from io import BytesIO
 import os
+import bcrypt as hash
+
 
 app = Flask(__name__)
+bcrypt = Bcrypt(app)
 
 #generate better key later
 app.secret_key = 'your_secret_key'
 login_manager = LoginManager(app)
 
 global_data=None
+userNames=None
 
 @app.before_request
 def initialize():
@@ -45,31 +51,91 @@ def protected_route():
     else:
         return redirect(url_for('login'))
         
-
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-     
     if request.method == 'POST':
-            username = request.form['username']
-            password = request.form['password']
-            params = {'uname': username,'pass': password}
-            db_conn = app.config['database']
-            data_fetcher = DataFetcher(database=db_conn)
-            user_creds=data_fetcher.fetch_row(creds % params)
+        username = request.form['username']
+        password = request.form['password']
+        db_conn = app.config['database']
+        data_fetcher = DataFetcher(database=db_conn)
 
-            if user_creds:
-                user= User(user_creds[0])
+        # Retrieve the hashed password for the user
+        stored_hashed_password, salt = data_fetcher.fetch_hashed_password(username)
+
+        if stored_hashed_password and salt:
+            byte_password=bytes.fromhex(stored_hashed_password)
+            byte_salt=bytes.fromhex(salt)
+            # Hash the user-entered password with the stored salt
+            hashed_password = hash.hashpw(password.encode('utf-8'), byte_salt)
+            # Verify the hashed password using Flask-Bcrypt
+            if hashed_password == byte_password:
+                user = User(username)
                 login_user(user)
-                fnameLname= data_fetcher.fetch_row(names % username)
+                fnameLname = data_fetcher.fetch_row(names % username)
                 global userNames
                 userNames = fnameLname[0] + ' ' + fnameLname[1]
+                print(current_user.id)
                 return redirect(url_for('home'))
             else:
                 error_message = 'Invalid username or password'
                 return render_template('login.html', error=error_message)
+        else:
+            error_message = 'Invalid username'
+            return render_template('login.html', error=error_message)
     else:
         return render_template('login.html')
-    
+    '''
+    #One istance
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        db_conn = app.config['database']
+        data_fetcher = DataFetcher(database=db_conn)
+
+        # Retrieve the hashed password for the user
+        stored_hashed_password = data_fetcher.fetch_hashed_password(username)
+
+        if stored_hashed_password:
+            # Verify the hashed password using Flask-Bcrypt
+            if bcrypt.check_password_hash(stored_hashed_password, password):
+                user = User(username)
+                login_user(user)
+                fnameLname = data_fetcher.fetch_row(names % username)
+                global userNames
+                userNames = fnameLname[0] + ' ' + fnameLname[1]
+                print(current_user)
+                return redirect(url_for('home'))
+            else:
+                error_message = 'Invalid username or password'
+                return render_template('login.html', error=error_message)
+        else:
+            error_message = 'Invalid username'
+            return render_template('login.html', error=error_message)
+    else:
+        return render_template('login.html')
+    '''
+
+    '''
+    #Another instance
+    # Stored salt and hashed password
+    stored_salt = b'$2b$12$XeVBskS8tx4oIEnkiGmuae'
+   
+
+    # User-entered password
+    user_entered_password = "carolecholai"
+    stored_hashed_password = b'$2b$12$XeVBskS8tx4oIEnkiGmuae61QvMv2LV/2t5.7TiztYP1chmUZ4/uG'
+
+    # Hash the user-entered password with the stored salt
+    hashed_password = hash.hashpw(user_entered_password.encode('utf-8'), stored_salt)
+
+    # Compare the hashed user-entered password with the stored hashed password
+    if hashed_password == stored_hashed_password:
+        print('Password is correct')
+    else:
+        print('Password is incorrect')
+
+    return render_template('login.html')
+    '''
 @app.route("/")
 @login_required
 def home():
@@ -152,7 +218,8 @@ def inventory_page():
 @app.route("/profile-page")
 @login_required
 def profile_page():
-    return render_template("profile.html")
+    test= userNames
+    return render_template("profile.html", Username=test)
 
 @app.route("/help-page")
 @login_required
@@ -190,6 +257,7 @@ def logout():
     return redirect(url_for('home'))
 
 @app.route('/preview-invoice', methods=['GET', 'POST'])
+@login_required
 def preview_invoice():
     if request.method == 'POST':
         # Collect the necessary information from the form
@@ -251,6 +319,7 @@ def preview_invoice():
 
 #Route to return the Entity Details to drop-down menu
 @app.route('/mission-entity-details', methods=['POST'])
+@login_required
 def mission_entity_details():
     global global_data
     mission_data=global_data
@@ -260,6 +329,7 @@ def mission_entity_details():
     return jsonify(item_data)
 
 @app.route('/invoice-entry')
+@login_required
 def invoice_entry():
     
     invNo = session['inv']
@@ -305,6 +375,7 @@ def invoice_entry():
         return redirect(url_for('invoice_page'))
 
 @app.route('/generate-pdf')
+@login_required
 def generate_pdf():
 
         filename = "IT_Invoice_"+session['inv']
@@ -482,6 +553,7 @@ def cancel():
     return redirect(url_for('invoice_page'))
 
 @app.route('/download-pdf/<string:inv>')
+@login_required
 def download_pdf(inv):
     db_conn = app.config['database']
     data_fetcher = DataFetcher(database=db_conn)
@@ -509,6 +581,7 @@ def download_pdf(inv):
     return response
 
 @app.route('/add-customer', methods=['GET', 'POST'])
+@login_required
 def add_customer():
     if request.method == 'POST':
         # Collect the necessary information from the form
@@ -526,8 +599,64 @@ def add_customer():
 
     return render_template('input.html')
 
+@app.route('/update-flag', methods=['POST'])
+@login_required
+def update_flag():
+    try:
+        # Get data from the request (assumes it's sent as JSON)
+        data = request.get_json()
+        flag = data['flag']
+        servTag = data['id']
+        updatedata=(flag, servTag)
+        print("huh", updatedata)
+        db_conn = app.config['database']
+        data_fetcher = DataFetcher(database=db_conn)
+        result = data_fetcher.update_data(update, updatedata)
+        print(result)
+        return jsonify({'success': 'Flag updated successfully'}), 200
+
+    except Exception as e:
+        print("The error", e)
+        return jsonify({'error': str(e)}), 500
+    
+@app.route('/change-password', methods=['POST'])
+@login_required
+def change_password():
+    if request.method == 'POST':
+        current_password = request.form['current_password']
+        new_password = request.form['new_password']
+        confirm_new_password = request.form['confirm_new_password']
+        db_conn = app.config['database']
+        data_fetcher = DataFetcher(database=db_conn)
+        username=current_user.id
+        # Retrieve the hashed password for the user
+        hex_stored_password, hex_stored_salt = data_fetcher.fetch_hashed_password(username)
+        stored_password = bytes.fromhex(hex_stored_password)
+        stored_salt=bytes.fromhex(hex_stored_salt)
+        hashed_current_password= hash.hashpw(current_password.encode('utf-8'), stored_salt)
+
+        # Check if the current password matches the user's actual password
+        if stored_password != hashed_current_password:
+            flash('Incorrect current password', 'error')
+        elif new_password != confirm_new_password:
+            flash('New passwords do not match', 'error')
+        else:
+            # Hash the new password before updating it
+            salt = hash.gensalt()
+            hex_salt=salt.hex()
+            hashed_password = hash.hashpw(new_password.encode('utf-8'), salt)
+            hex_hashed_password=hashed_password.hex()
+            update_password="UPDATE `it_stock_db`.`users` SET `password` = %s, `salt` = %s WHERE (`username` = %s);"
+            data=(hex_hashed_password, hex_salt, username)
+            data_fetcher.update_data(update_password, data)
+
+            # Save the updated user to the database
+            #db.session.commit()
+            flash('Password updated successfully', 'success')
+            return redirect(url_for('profile_page'))
+
+    return redirect(url_for('profile_page'))
 
 if__name__ = '__main__'
 
 app.run(host='0.0.0.0', debug = True)
-

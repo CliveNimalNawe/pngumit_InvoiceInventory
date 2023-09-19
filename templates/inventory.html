@@ -9,19 +9,13 @@
     
     <script src="{{url_for('static', filename='script/jquery3.6.0.min.js')}}"></script>
     <script src="{{url_for('static', filename='DataTables/datatables.min.js')}}"></script>
+    <script src="{{url_for('static', filename='script/script.js')}}"></script>
+
     <style>
       table{
         margin-bottom: 100px;
         width: 100%;
         overflow: auto;
-      }
-
-      .flagged-1{
-        background-color: #99ff99 !important;
-      }
-
-      .flagged-2{
-        background-color: #ff3300 !important;
       }
     </style>
   </head>
@@ -35,10 +29,11 @@
        <a href="{{ url_for('home') }}"> <button>Home</button></a> 
        <a href="{{ url_for('invoice_page') }}"><button>Invoice</button></a> 
        <a href="{{ url_for('inventory_page') }}"><button>Inventory</button></a>
+       <a href="{{ url_for('catalog_page') }}"><button>Item Catalog</button></a>
        <a href="{{ url_for('customer_page') }}"><button>Customers</button></a> 
        <a href="{{ url_for('notification_page') }}"><button>Notification</button></a>  
        <a href="{{ url_for('report_page') }}"><button>Reports</button></a> 
-       <a href="{{ url_for('profile_page') }}"><button>Profiles</button></a> 
+       <a href="{{ url_for('profile_page') }}"><button>Profile</button></a> 
        <a href="{{ url_for('help_page') }}"><button>Help</button></a> 
 
       </div>
@@ -46,7 +41,6 @@
     <!-- Home -->
 
     <div class="main-content">
-      <h2 id="page-title">Inventory</h2>
       <div class="tab">
         <button class="tablinks" onclick="openCity(event, 'invoice_records')" id="defaultOpen">Inventory Records</button>
         <button class="tablinks" onclick="openCity(event, 'new_invoice')">New Item</button>
@@ -71,10 +65,10 @@
           <tbody>
               {% for item in inventory%}
                 <tr>
-                <td><p class="hidden-flag" data-state="{{item[9]}}">{{item[9]}}</p><button class="flag-button" data-state="{{item[9]}}" data-row="{{loop.index0}}">Flag<!--<i class="fa-solid fa-flag"></i>--></button></td>
+                <td><p class="hidden-flag" data-state="{{item[9]}}" hidden>{{item[9]}}</p><button class="flag-button" data-state="{{item[9]}}" data-row="{{loop.index0}}"><i class="fa-solid fa-flag"></i></button></td>
                 <td>{{item[0]}}</td>
                 <td>{{item[1].title()}}</td>
-                <td>{{(item[9])}}</td>
+                <td>{{(item[10])}}</td>
                 <td>{{item[2]}}</td>
                 <td>{{item[3]}}</td>
                 <td>{{item[4]}}</td>
@@ -96,28 +90,6 @@
       <p>&copy; 2023 PNGUMIT STORE. All rights reserved.</p>
     </div>
   <script>
-
-    //Function for the tab functions of the page
-    function openCity(evt, cityName) {
-      // Declare all variables
-      var i, tabcontent, tablinks;
-
-      // Get all elements with class="tabcontent" and hide them
-      tabcontent = document.getElementsByClassName("tabcontent");
-      for (i = 0; i < tabcontent.length; i++) {
-        tabcontent[i].style.display = "none";
-      }
-
-    // Get all elements with class="tablinks" and remove the class "active"
-    tablinks = document.getElementsByClassName("tablinks");
-    for (i = 0; i < tablinks.length; i++) {
-      tablinks[i].className = tablinks[i].className.replace(" active", "");
-    }
-
-    // Show the current tab, and add an "active" class to the button that opened the tab
-    document.getElementById(cityName).style.display = "block";
-    evt.currentTarget.className += " active";
-  }
 
   //Functions defined in here will execute when page loads
   $(document).ready( function () {
@@ -151,10 +123,20 @@
       var currentState = parseInt(button.data('state'), 10);
       var newState = (currentState + 1) % 3;
       var row = table.row(button.parents('tr'));
-
-      // Update the button's text and data-state attribute
+      
+      //The test variables
+      var rowData=row.data();
+      $.ajax({
+        url:'/update-flag',
+        method: 'POST',
+        data: JSON.stringify({ id: rowData[1], flag: newState }),
+        contentType: 'application/json', // Set the content type to JSON
+        dataType: 'json', // Expect JSON in the response
+        success: function(response){
+          if (response.success){
+            // Update the button's text and data-state attribute
       button.data('state', newState);
-      updateButtonText(button, newState);
+      //updateButtonText(button, newState); //This has also been commneted out inline with the button case styling below
 
       // Update the hidden flag paragraph tag
       var hiddenFlag = row.node().getElementsByClassName('hidden-flag')[0];
@@ -167,16 +149,29 @@
 
       // Update the database with the new state (you would need to implement this part)
       //updateDatabase(row.data(), newState);
+            updateRows();
+          }else{
+            alert('Failed')
+          }
+        },
+        error: function() {
+          alert('failed')
+        }
+      });
+
     });
 
     // Initialize button text based on initial data-state attribute
     $('.flag-button').each(function() {
       var button = $(this);
       var initialState = parseInt(button.data('state'), 10);
-      updateButtonText(button, initialState);
-    });    
+      //updateButtonText(button, initialState); //This has also been commneted out inline with the button case styling below.
+    });
+    // Get the element with id="defaultOpen" and click on it
+document.getElementById("defaultOpen").click();    
   });
 
+  /* This function may be used to change the buttons styling. Just commnented it out for future use.
   // Function to update the button text based on the flag state
   function updateButtonText(button, state) {
     switch (state) {
@@ -190,12 +185,11 @@
         button.text('Red');
         break;
     }
+    
   }
-
-  // Get the element with id="defaultOpen" and click on it
-  document.getElementById("defaultOpen").click();
+  */
 </script>
-</body>
 
+</body>
 </html>
 

@@ -64,4 +64,39 @@ class DataFetcher:
             cursor.close()
             self.database.close()
             return False
+        
+    def update_data(self, query, data):
+        try:
+            self.database.connect()
+            cursor = self.database.connection.cursor()
+            cursor.execute(query, data)
+            self.database.connection.commit()
+            cursor.close()
+            return True
+
+        except Exception as e:
+            print("Error occurred during update:", str(e))
+            cursor.close()
+            return False
+
+        finally:
+            self.database.close()
+            
+    def fetch_hashed_password(self, username):
+        self.database.connect()
+        cursor = self.database.connection.cursor()
+        
+        # Query the database to retrieve the hashed password and salt
+        query = "SELECT password, salt FROM users WHERE username = %s"
+        cursor.execute(query, (username,))
+        result = cursor.fetchone()
+
+        cursor.close()
+        self.database.close()
+
+        if result:
+            hashed_password, salt = result
+            return hashed_password, salt
+        else:
+            return None, None
    
