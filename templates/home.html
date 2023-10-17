@@ -8,6 +8,7 @@
   <body>
     <div class="header">
       <h1>PNGUMIT STORE</h1>
+      <h3 class="logout-button"><a href="{{ url_for('logout')}}">Logout</a></h3>
     </div>
       <div class="left-panel">
         <a href="{{ url_for('home') }}"> <button>Home</button></a> 
@@ -26,9 +27,6 @@
     <!-- Home -->
 
     <div class="main-content">
-      <form action="{{ url_for('logout') }}" method="GET">
-        <button type="submit">Logout</button>
-    </form>
     <h1>Stock left</h1>
       <div class="card_container">
         {% for item in data %}

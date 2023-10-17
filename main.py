@@ -662,6 +662,12 @@ def change_password():
 def catalog_page():
     return render_template('catalog.html')
 
+@app.route('/upload_csv')
+@login_required
+def upload_csv():
+    success="True"
+    return success
+
 
 if__name__ = '__main__'
 

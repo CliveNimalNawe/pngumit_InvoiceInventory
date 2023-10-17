@@ -13,6 +13,19 @@ body{
   margin-top:none;
   z-index: 1;
 }
+.logout-button{
+  position: fixed;
+  top: 5px;
+  right: 5px;
+}
+
+h3 > a{
+  color: white;
+  text-decoration: none;
+}
+h3 > a:hover{
+  color: grey;
+}
 
 /* CSS styles for the left navigation panel */
 .left-panel {

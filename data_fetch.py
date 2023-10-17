@@ -99,4 +99,24 @@ class DataFetcher:
             return hashed_password, salt
         else:
             return None, None
+        
+    def bulk_insert_data(self, query, data_list):
+        try:
+            self.database.connect()
+            cursor = self.database.connection.cursor()
+
+            # Use executemany to insert multiple rows at once
+            cursor.executemany(query, data_list)
+
+            self.database.connection.commit()
+            cursor.close()
+            return True
+
+        except Exception as e:
+            print("Error occurred during bulk insertion:", str(e))
+            cursor.close()
+            return False
+
+        finally:
+            self.database.close()
    

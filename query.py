@@ -7,7 +7,7 @@ creds="SELECT username FROM users WHERE username = '%(uname)s' AND password = '%
 names="SELECT fname, lname FROM it_contact WHERE uname='%s'"
 
 #Query to get all invetory
-inventory = "SELECT inventory.*, items.itm_model FROM inventory RIGHT JOIN items ON inventory.itm_name=items.itm_name AND inventory.date_stocked=items.date_stocked"
+inventory = "SELECT inventory.*, items.itm_model FROM inventory RIGHT JOIN items ON inventory.itm_id=item_id"
 #Query to get total of a type of item in stock.
 qty_query="SELECT DISTINCT itm_name, itm_img_url, curr_qty, tot_qty FROM items"
 

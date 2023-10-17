@@ -22,6 +22,7 @@
   <body>
     <div class="header">
       <h1>PNGUMIT STORE</h1>
+      <h3 class="logout-button"><a href="{{ url_for('logout')}}">Logout</a></h3>
     </div>
     <div class="left-panel">
 
@@ -67,22 +68,26 @@
                 <tr>
                 <td><p class="hidden-flag" data-state="{{item[9]}}" hidden>{{item[9]}}</p><button class="flag-button" data-state="{{item[9]}}" data-row="{{loop.index0}}"><i class="fa-solid fa-flag"></i></button></td>
                 <td>{{item[0]}}</td>
-                <td>{{item[1].title()}}</td>
+                <td>{{item[1]}}</td>
                 <td>{{(item[10])}}</td>
                 <td>{{item[2]}}</td>
                 <td>{{item[3]}}</td>
                 <td>{{item[4]}}</td>
                 <td>{{item[5]}}</td>
                 <td>{{item[6]}}</td>
-                <td>{{item[7].title()}}</td>
-                <td>{{item[8].title()}}</td>
+                <td>{{item[7]}}</td>
+                <td>{{item[8]}}</td>
               </tr>
               {% endfor %}
           </tbody>
         </table>
       </div>
       <div id="new_invoice" class="tabcontent">
-        <p>New Items Entry Here</p>
+        <h3>Bulk Upload</h3>
+        <form action="{{url_for('upload_csv')}}">
+          <input type="file" name="upload_csv" id="">
+          <button>Submit</button>
+        </form>
       </div>
     </div>
     
