@@ -1,48 +1,7 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="UTF-8">
-    <title>Inventory and Invoice Management System</title>
-    <link rel="stylesheet" type="text/css" href="{{ url_for ('static', filename='css/style.css')}}">
-  </head>
-  <body>
-    <div class="header">
-      <h1>PNGUMIT STORE</h1>
-      <h3 class="logout-button"><a href="{{ url_for('logout')}}">Logout</a></h3>
-    </div>
-    <div class="left-panel">
-        <div class="left-panel">
+{% extends 'base.html' %}
 
-
-          <a href="{{ url_for('home') }}"> <button>Home</button></a> 
-          <a href="{{ url_for('invoice_page') }}"><button>Invoice</button></a> 
-          <a href="{{ url_for('inventory_page') }}"><button>Inventory</button></a>
-          <a href="{{ url_for('catalog_page') }}"><button>Item Catalog</button></a>
-          <a href="{{ url_for('customer_page') }}"><button>Customers</button></a> 
-          <a href="{{ url_for('notification_page') }}"><button>Notification</button></a>  
-          <a href="{{ url_for('report_page') }}"><button>Reports</button></a> 
-          <a href="{{ url_for('profile_page') }}"><button>Profile</button></a> 
-          <a href="{{ url_for('help_page') }}"><button>Help</button></a> 
-   
-
-      </div>
-    </div>
-
-    <!-- Home -->
-
-    <div class="main-content">
-      <h2 id="page-title">HELP</h2>
-      <p>Welcome to PNGUMIT STORE inventory and invoice management system. Use the navigation panel on the left to access different features of the system.</p>
-    </div>
- 
-
-    <div class="footer">
-      <p>&copy; 2023 PNGUMIT STORE. All rights reserved.</p>
-    </div>
-    
- 
-      
-</body>
-
-</html>
+{% block content %}
+<h2 id="page-title">HELP</h2>
+<p>Welcome to PNGUMIT STORE inventory and invoice management system. Use the navigation panel on the left to access different features of the system.</p>
+{% endblock %}
 

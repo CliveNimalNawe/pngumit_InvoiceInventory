@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Inventory and Invoice Management System</title>
+    <link rel="stylesheet" type="text/css" href="{{url_for ('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='DataTables/datatables.min.css')}}">    
+    <script src="{{url_for('static', filename='script/jquery3.6.0.min.js')}}"></script>
+    <script src="{{url_for('static', filename='DataTables/datatables.min.js')}}"></script>
+    <script src="{{url_for('static', filename='script/script.js')}}"></script>
+</head>
+<body>
+    {% include 'header.html' %}
+    {% include 'sidepanel.html' %}
+
+    <div class="main-content">
+        {% block content %}{% endblock %}
+    </div>
+
+    <div class="footer">
+        <p>&copy; 2023 PNGUMIT STORE. All rights reserved.</p>
+      </div>
+</body>
+<script>
+    $(document).ready( function () {
+    $('#myTable').DataTable();
+
+    // Get the element with id="defaultOpen" and click on it to open one of the tabs
+    document.getElementById("defaultOpen").click();
+    } );
+  </script>
+</html>

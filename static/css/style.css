@@ -169,6 +169,10 @@ h3 > a:hover{
   margin-bottom: 10px;
   flex:0 0 150px;
 }
+.card > h3{
+  text-transform: capitalize;
+  text-align: center;
+}
 /* CSS styles for item images*/
 .item_image{
   margin:5px auto;
