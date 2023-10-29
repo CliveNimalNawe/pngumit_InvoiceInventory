@@ -16,7 +16,7 @@ body{
 .logout-button{
   position: fixed;
   top: 5px;
-  right: 5px;
+  right: 10px;
 }
 
 h3 > a{

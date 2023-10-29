@@ -29,14 +29,14 @@
           <td>{{item[4]}}</td>
           <td>{{item[5].title()}}</td>
           <td>PGK {{item[6]}}</td>
-          <td>{{item[7]}} <a href="{{ url_for('download_pdf', inv=item[0])}}">Download</a></td>
+          <td>{{item[7]}} <a href="{{ url_for('route_generatePDF.download_pdf', inv=item[0])}}">Download</a></td>
         </tr>
         {% endfor %}
     </tbody>
   </table>
 </div>
 <div id="new_invoice" class="tabcontent">
-<form method="POST" action="{{url_for('preview_invoice')}}" class="invoice_form" id="form1">
+<form method="POST" action="{{url_for('route_generatePDF.preview_invoice')}}" class="invoice_form" id="form1">
     <div>
       <label for="inv_no">Invoice Number:</label>
       <input type="text" name="inv_no" value="{{inv}}" readonly> 
