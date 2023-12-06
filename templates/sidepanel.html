@@ -1,11 +1,12 @@
 <div class="left-panel">
-    <a href="{{ url_for('home') }}"> <button>Home</button></a> 
+    <a href="{{ url_for('home') }}"><button>Home</button></a> 
+    <a href="{{ url_for('quote')}}"><button>Quote</button></a>
     <a href="{{ url_for('route_generatePDF.invoice_page') }}"><button>Invoice</button></a> 
     <a href="{{ url_for('inventory_page') }}"><button>Inventory</button></a>
     <a href="{{ url_for('catalog_page') }}"><button>Item Catalog</button></a>
     <a href="{{ url_for('customer_page') }}"><button>Customers</button></a> 
     <a href="{{ url_for('notification_page') }}"><button>Notification</button></a>  
     <a href="{{ url_for('report_page') }}"><button>Reports</button></a> 
-    <a href="{{ url_for('profile_page') }}"><button>Profile</button></a> 
+    <a href="{{ url_for('change_password_page') }}"><button>Change Password</button></a> 
     <a href="{{ url_for('help_page') }}"><button>Help</button></a> 
 </div>

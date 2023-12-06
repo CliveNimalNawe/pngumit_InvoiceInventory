@@ -92,6 +92,11 @@ def home():
 
     return render_template('home.html', data=data)
 
+@app.route("/quote-page")
+@login_required
+def quote():
+    return render_template('quote.html')
+
 @app.route("/inventory-page")
 @login_required
 def inventory_page():
@@ -101,11 +106,11 @@ def inventory_page():
     inventorydata=data_fetcher.fetch_data(inventory)
     return render_template("inventory.html", inventory=inventorydata)
 
-@app.route("/profile-page")
+@app.route("/change-password-page")
 @login_required
-def profile_page():
+def change_password_page():
     test= session['userName']
-    return render_template("profile.html", Username=test)
+    return render_template("change_password.html", Username=test)
 
 @app.route("/help-page")
 @login_required
