@@ -1,7 +1,80 @@
+{% set active_page = 'catalog_page' %}
 {% extends 'base.html' %}
 
 {% block content %}
+<div class="tab">
+    <button class="tablinks" onclick="openCity(event, 'invoice_records')" id="defaultOpen">Items</button>
+    <button class="tablinks" onclick="openCity(event, 'new_invoice')">New Item</button>
+  </div>
+  <div id="invoice_records" class="tabcontent">
+    <table id="myTable" class="display">
+      <thead>
+          <tr>
+          <th>Item Name</th>
+          <th>Date Stocked</th>
+          <th>Brand</th>
+          <th>Model</th>
+          <th>Price</th>
+          <th>Description</th>
+          <th>Total ordered</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+          {% for item in customers%}
+            <tr>
+            <td>{{item[1].title()}}</td>
+            <td>{{item[2]}}</td>
+            <td>{{item[3]}}</td>
+            <td>{{item[4]}}</td>
+            <td>{{item[5]}}</td>
+            <td>{{item[6]}}</td>
+            <td>{{item[9]}}</td>
+            <td><a href="">Edit</a></td>
+          </tr>
+          {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div id="new_invoice" class="tabcontent">
+    <form method="POST" action="{{url_for('add_item')}}" class="new-item-form" id="form1">
+      
+      <div>
+        <label for="mission_id">Item name:</label>
+        <input type="text" name="item_name" required>
+      </div>
+
+      <div>
+        <label for="mission_entity">Date Stocked:</label>
+        <input type="date" name="date_stocked" required>
+      </div>
+
+      <div class="address">
+        <label for="address">Brand:</label>
+        <input type="text" name="brand" id="" required>
+      </div>
+      <div class="address">
+        <label for="address">Model:</label>
+        <input type="text" name="model" id="" required>
+      </div>
+      <div class="address">
+        <label for="address">Price:</label>
+        <input type="number" name="price" id="" required>
+      </div>
+      <div class="address">
+        <label for="address">Total Ordered:</label>
+        <input type="number" name="ordered" id="" required>
+      </div>
+      <div class="address">
+        <label for="address">Description:</label>
+        <textarea name="description" id="" required> Description</textarea>
+      </div>
+      <button type="submit">Add Item</button>
+    </form>
+    </div>
+
     
+  </div>
 {% endblock %}
 
 

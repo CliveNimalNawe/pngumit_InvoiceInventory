@@ -62,6 +62,11 @@ h3 > a:hover{
   background-color: #555;
 }
 
+.left-panel button.active {
+  /* Styles for the active button */
+  background-color: #555;
+  color: #f1f1f1;/* Change color to highlight active button */
+}
 /* CSS styles for the main content area */
 .main-content {
   margin-left: 200px;

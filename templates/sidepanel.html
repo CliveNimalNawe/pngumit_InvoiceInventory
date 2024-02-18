@@ -1,12 +1,14 @@
+<!-- Uncomment to show other tabs-->
 <div class="left-panel">
-    <a href="{{ url_for('home') }}"><button>Home</button></a> 
-    <a href="{{ url_for('quote')}}"><button>Quote</button></a>
-    <a href="{{ url_for('route_generatePDF.invoice_page') }}"><button>Invoice</button></a> 
-    <a href="{{ url_for('inventory_page') }}"><button>Inventory</button></a>
-    <a href="{{ url_for('catalog_page') }}"><button>Item Catalog</button></a>
-    <a href="{{ url_for('customer_page') }}"><button>Customers</button></a> 
-    <a href="{{ url_for('notification_page') }}"><button>Notification</button></a>  
-    <a href="{{ url_for('report_page') }}"><button>Reports</button></a> 
-    <a href="{{ url_for('change_password_page') }}"><button>Change Password</button></a> 
-    <a href="{{ url_for('help_page') }}"><button>Help</button></a> 
+    <a href="{{ url_for('home') }}"><button class="{% if active_page == 'home' %}active{% endif %}">Home</button></a> 
+    <a href="{{ url_for('route_generatePDF.quote')}}"><button class="{% if active_page == 'quote' %}active{% endif %}">Quote</button></a>
+    <a href="{{ url_for('route_generatePDF.invoice_page') }}"><button class="{% if active_page == 'invoice_page' %}active{% endif %}">Invoice</button></a> 
+    <a href="{{ url_for('inventory_page') }}"><button class="{% if active_page == 'inventory_page' %}active{% endif %}">Inventory</button></a>
+    <a href="{{ url_for('catalog_page') }}"><button class="{% if active_page == 'catalog_page' %}active{% endif %}">Item Catalog</button></a>
+    <a href="{{ url_for('customer_page') }}"><button class="{% if active_page == 'customer_page' %}active{% endif %}">Customers</button></a> 
+    <!-- <a href="{{ url_for('notification_page') }}"><button class="{% if active_page == 'notification_page' %}active{% endif %}">Notification</button></a>   -->
+    <!-- <a href="{{ url_for('report_page') }}"><button class="{% if active_page == 'report_page' %}active{% endif %}">Reports</button></a>  -->
+    <a href="{{ url_for('change_password_page') }}"><button  class="{% if active_page == 'change_password_page' %}active{% endif %}">Change Password</button></a> 
+    <!-- <a href="{{ url_for('help_page') }}"><button class="{% if active_page == 'help_page' %}active{% endif %}">Help</button></a>  -->
+    
 </div>

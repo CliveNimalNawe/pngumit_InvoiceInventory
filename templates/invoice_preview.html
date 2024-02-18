@@ -12,7 +12,7 @@
     </div>
     <div class="left-panel">
       <a href="{{ url_for('home') }}"><button>Home</button></a> 
-      <a href="{{ url_for('quote')}}"><button>Quote</button></a>
+      <a href="{{ url_for('route_generatePDF.quote')}}"><button class="{% if active_page == 'quote' %}active{% endif %}">Quote</button></a>
       <a href="{{ url_for('route_generatePDF.invoice_page') }}"><button>Invoice</button></a> 
       <a href="{{ url_for('inventory_page') }}"><button>Inventory</button></a>
       <a href="{{ url_for('catalog_page') }}"><button>Item Catalog</button></a>

@@ -1,0 +1,52 @@
+{% set active_page = 'quote' %}
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2 id="page-title">Confirm Details</h2>
+    
+    <div>
+    <p>Bill To: </p>
+    <p>{{session['qEntity']}} - {{session['qDept']}}</p>
+    <p>{{session['qAdd']}}</p>
+    </div>
+
+    <div>
+    <p>Mission Contact: {{session['qContact']}}</p>
+    <p>IT Contact: {{session['qIT']}}</p>
+    </div>
+
+    <div>
+    <table border="1px" width="100%">
+        <tr>
+            <th>Quantity</th>
+            <th>Description</th>
+            <th>Unit Price</th>
+            <th>Total Price</th>
+            <th>ID</th>
+        </tr>
+        
+        {% for item in session['dlist']%}
+        <tr>
+          <td>{{ item['quantity'] }}</td>
+          <td>{{ item['description']}}</td>
+          <td>{{ item['price'] }}</td>
+          <td>{{ session['totalprice'][loop.index0]}}</td>
+        </tr>
+      {% endfor %}
+        <tr>
+            <th></th>
+            <th></th>
+            <th>Total:</th>
+            <th> {{session['totalcost']}}</th>
+        </tr>
+        </table>
+    </div>
+
+    <div class="controls">
+    <!-- Cancel button -->
+    <button><a href="{{url_for('route_generatePDF.quote_entry')}}">Confirm</a></button>
+    <a href="{{url_for('route_generatePDF.quote')}}">Cancel</a>
+ 
+    {% endblock %}
+
+

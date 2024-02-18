@@ -1,6 +1,252 @@
+{% set active_page = 'quote' %}
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>Quote</h1>
+<div class="tab">
+  <button class="tablinks" onclick="openCity(event, 'quotation_records')" id="defaultOpen">Quotation Records</button>
+  <button class="tablinks" onclick="openCity(event, 'new_quotation')">New Quotation</button>
+</div>
+<div id="quotation_records" class="tabcontent">
+  <table id="myTable" class="display">
+    <thead>
+        <tr>
+        <th>Quotation Number</th>
+        <th>Date and Time</th>
+        <th>Mission Entity</th>
+        <th>Mission Department</th>
+        <th>Mission Contact</th>
+        <th>IT Contact</th>
+        <th>Total Quoted Amount</th>
+        <th>Comments</th>
+        <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in quotations%}
+        {% set id_value = "%06d"|format(item[0]) %}
+          <tr>
+          <td>{{id_value}}</td>
+          <td>{{item[1]}}</td>
+          <td>{{item[2]}}</td>
+          <td>{{item[3]}}</td>
+          <td>{{item[4]}}</td>
+          <td>{{item[5]}}</td>
+          <td>PGK {{item[6]}}</td>
+          <td>{{item[7]}} </td>
+          <td><a href="#" class="amendLink" data-id="{{id_value}}">Amend</a>&nbsp;<a href="{{ url_for('route_generatePDF.download_pdf', inv=item[0])}}">Download</a></td>
+        </tr>
+        {% endfor %}
+    </tbody>
+  </table>
 
+  <!-- Hidden modal content -->
+  <div id="myModal" class="modal">
+      <div class="modal-content" >
+          <span class="close">&times;</span>
+          
+          <div id="modalContent" style="margin:auto; width:100%;">
+          <h2>Quotation Number:&nbsp;<span id="quotationNo"></span></h2>
+          <table id="data-table">
+            <!-- Table headers -->
+            <thead>
+              <tr>
+                <th>Item ID</th>
+                <th>Quantity</th>
+                <th>Unit Price</th>
+                <th>Total</th>
+                <th>Item</th>
+                <th>Brand</th>
+                <th>Model</th>
+                <th>Actions</th>
+                <!-- Add more headers as needed -->
+              </tr>
+            </thead>
+            <!-- Table body -->
+            <tbody>
+              <!-- Data will be dynamically inserted here -->
+            </tbody>
+          </table>
+          
+          <h3>Total:&nbsp;PGK <span id="totalAmount" style="color: red;"></span></h3>
+
+          <form method="POST" action="{{url_for('route_generatePDF.edit_comment')}}" class="comment_form" id="form3">
+            <input type="number" value="" id="quoteToEdit" name="quoteToEdit" hidden>
+            <p><label for="quotationComments">Comments:</label></p>
+            <textarea id="quotationComments" name="quotationComments" rows="4" cols="50"></textarea>
+            <br>
+            <input type="submit"> 
+          </form>
+
+          <form method="POST" action="{{url_for('route_generatePDF.ammend_quotation')}}" class="quote_form" id="form2">
+          <h3>Add Another Item</h3>
+          <select id="selectDropdown">
+            <option value="" disabled selected>Choose</option>
+          </select>
+          <input type="text" id="priceField" disabled>
+          <input type="number" id="quantity" required>
+          <input type="submit">
+          </form>
+        </div>
+
+      </div>
+      
+  </div>
+   <script>
+    // jQuery to handle link click event
+    $(document).ready(function() {
+
+
+        $('.amendLink').on('click', function(event) {
+            event.preventDefault(); // Prevent the default behavior of the link
+            var id = $(this).data('id'); // Get the ID associated with the link
+            $.ajax({
+                url: '/get-quoted-items', //Flask route to fetch data
+                method: 'POST',
+                data: { id: id }, // Send the ID to your Flask route
+                success: function(response) {
+                  // Display the fetched data in the modal
+                  //$('#modalContent').html(response);
+                  // Show the modal
+                  // $('#myModal').css('display', 'block');
+                  $('#quotationNo').text(response.qNo);
+                  $('#totalAmount').text(response.quote[6]);
+                  $('#quotationComments').text(response.quote[7]);
+                  $('#quoteToEdit').val(response.qNo);
+                  var tbody = $('#data-table tbody');
+                  tbody.empty(); // Clear any previous content
+
+                  // Populate the modal's table body with the received data
+                  response.qItems.forEach(function(row) {
+                    var tr = $('<tr>');
+                    row.data.forEach(function(cell, index) {
+                      row.data[0];
+                      console.log(row.data[0]);
+                      var td = $('<td>').text(cell);
+                      if (index == 0){}
+                      else if (index == 1){}
+                      else if (index == 8){
+                        tr.append(td);
+                        td= $('<td>');
+                        var link = $('<a>').attr('href', "{{ url_for('route_generatePDF.download_pdf', inv='test')}}").text("Remove");
+                        td.append(link);
+                        tr.append(td);
+                      }
+                      else{
+                        tr.append(td);
+                      }
+
+                    });
+                    tbody.append(tr);
+                  });
+                  var data=response.catalog
+                  // Populate the dropdown with options from the AJAX response
+                  const selectDropdown = $('#selectDropdown');
+                  data.forEach(function(item) {
+                      const option = $('<option>');
+                      option.val(item[0]); // Use Index 0 as the value
+                      option.text(item[1]); // Use Index 1 as the displayed text
+                      selectDropdown.append(option);
+                  });
+
+                  // On dropdown selection change
+                  selectDropdown.change(function() {
+                      const selectedValue = $(this).val();
+                      const selectedItem = data.find(item => item[0] == selectedValue); // Find the selected item in data
+                      console.log(selectedItem[5]);
+
+                      // Update the price field with the price of the selected item
+                      if (selectedItem) {
+                          $('#priceField').val(selectedItem[5]); // Use Index 3 as the price
+                      } else {
+                          $('#priceField').val('test'); // Clear the price field if no item is selected
+                      }
+                  });
+
+                  // Show the modal
+                  $('#myModal').show();
+                },
+                error: function(error) {
+                    console.log(error);
+                }
+            });
+        });
+        // Close the modal when the close button (×) is clicked
+      document.getElementsByClassName('close')[0].addEventListener('click', function() {
+          document.getElementById('myModal').style.display = 'none';
+      });
+
+      document.getElementById('form3').addEventListener('submit', function(event){
+        event.preventDefault();
+        //var theForm = document.get
+        let formData= new FormData(document.getElementById('form3'));
+        console.log(formData);
+        fetch('/edit-comment', {
+          method: 'POST',
+          body: formData
+        })
+        .then(response => response.text())
+        .then(data =>{
+          if (data.trim()==="success"){
+            $('amendLink').click();
+          }
+          else{
+            console.log(data.trim());
+          }
+        })
+
+      });
+
+    });
+</script>
+</div>
+<div id="new_quotation" class="tabcontent">
+  <form method="POST" action="{{url_for('route_generatePDF.preview_quotation')}}" class="invoice_form" id="form1">
+    <div>
+      <input type="text" name="it_contact" value="{{Uname}}" hidden>
+      <label for="contact_person">Contact Person:</label>
+      <input type="text" name="contact_person" required>
+    </div>
+    <label for="mission_entity">Mission Entity:</label>
+    
+    
+    <select name="mission_entity" required id="dropdown">
+      <option value="" disabled selected>Choose</option>
+      {% for item in data1 %}
+      <option value="{{ item.id }}">{{item.name}}</option>
+      {% endfor%}
+    </select>
+    <input id="address" name="address" value="" hidden>
+    <div>
+      <label for="mission_dept">Mission Department:</label>
+      <input type="text" name="mission_dept">
+    </div>
+
+{% for item in data %}
+  <div id="{{ item[1] }}{{ item[4] }}_div" class="form-row">
+    <div class="checkbox-label">
+      <input type="checkbox" name="{{ item[1] }}{{ item[4] }}" id="{{ item[1] }}{{ item[4] }}_checkbox" value="{{ item[1] }}{{ item[2] }}" class="item-checkbox">
+      <label for="{{ item[1] }}_checkbox">{{ item[0]}} {{ item[1].title() }} - {{ item[2].title() }}</label>
+    </div>
+
+    <input type="text" name="{{ item[1] }}{{ item[4] }}_input" value="{{ item[0] }} {{ item[1] }} - {{ item[2] }}" hidden>
+    <input type="text" name="{{ item[1] }}{{ item[4] }}_id" value="{{ item[5]}}" hidden>
+
+    <div class="input-label">
+      <b><label for="price">Price Per Unit (K):</label></b>
+      <input type="number" value="{{ item[3] }}" id="{{ item[1] }}{{ item[4] }}_price" name="{{ item[1] }}{{ item[4] }}_price" class="item-input" readonly disabled>
+    </div>
+
+    <div class="input-label">
+      <b><label for="quantity">Quantity:</label></b>
+      <input type="number" id="{{ item[1] }}{{ item[4] }}_quantity" name="{{ item[1] }}{{ item[4] }}_quantity" class="item-input" required disabled>
+    </div>
+
+  </div>
+
+{% endfor %}
+    <button type="submit">Quote</button>
+  </form>
+</div>
 {% endblock %}
+
+

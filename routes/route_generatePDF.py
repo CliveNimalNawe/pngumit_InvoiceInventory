@@ -1,13 +1,37 @@
-from flask import Blueprint, render_template, session, Response, request, url_for, flash, redirect, current_app
+# This route file is being used to organize all of the routes that generate PDFs
+from flask import Blueprint, jsonify, render_template, session, Response, request, url_for, flash, redirect, current_app
 from flask_login import LoginManager, login_required, current_user
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 from io import BytesIO
 import json, decimal, os, datetime
 from data_fetch import DataFetcher
-from query import qty_query, sold_query, id_query, creds, items, mission, names, lastInv, invoice, allInv, inventory, inv_itm, delete_details, delete_invoice, inv_basic, inv_details, add, entities, newEntity, update
+from query import items, mission, lastInv, invoice, allQuotes, allInv, inv_itm, delete_details, delete_invoice, inv_basic, inv_details, add, insertQuotation, insertQuoteDetails, lastQuote, delete_qDetails, delete_quotation, allQuotedItems, quotationInfo, itemCatalog, updateComment
 
 routeGeneratePDF_bp=Blueprint('route_generatePDF', __name__)
+
+@routeGeneratePDF_bp.route("/quote-page")
+@login_required
+def quote():
+    data_fetcher = DataFetcher(database=current_app.config['database'])
+    quotations = data_fetcher.fetch_data(allQuotes)
+
+    data=data_fetcher.fetch_data(items)
+    data1=data_fetcher.fetch_data(mission)
+    print(quotations)
+
+    formatted_data=[]
+    for item in data1:
+        mission_data = {
+            'id' : item[0], 'name' : item[1], 'address' : item[2]
+
+        }
+        formatted_data.append(mission_data)
+        dump = json.dumps(formatted_data)
+        json_string=json.loads(dump)
+
+        session['entityDetails']= json_string
+    return render_template('quote.html', quotations = quotations, data=data, data1=json_string, Uname=current_user.id)
 
 @routeGeneratePDF_bp.route("/invoice-page")
 @login_required
@@ -23,29 +47,34 @@ def invoice_page():
     invoice=data_fetcher.fetch_row(lastInv)
     ainv = data_fetcher.fetch_data(allInv)
 
-    # Extract the invoice value from the tuple
-    index = 0
-    for i, char in enumerate(invoice[0]):
-        if char.isdigit():
-            index = i
-            break
+    if invoice == None:
+        final_str="IT0000"
+    
+    else:
 
-# Split the integer and string parts
-    string_part = invoice[0][:index]
-    integer_part = invoice[0][index:]
-    num2 = "0001"
-    desired_length = 4
+        # Extract the invoice value from the tuple
+        index = 0
+        for i, char in enumerate(invoice[0]):
+            if char.isdigit():
+                index = i
+                break
 
-    # Convert the numbers to integers for addition
-    num1_int = int(integer_part)
-    num2_int = int(num2)
+    # Split the integer and string parts
+        string_part = invoice[0][:index]
+        integer_part = invoice[0][index:]
+        num2 = "0001"
+        desired_length = 4
 
-    # Perform the addition
-    result_int = num1_int + num2_int
+        # Convert the numbers to integers for addition
+        num1_int = int(integer_part)
+        num2_int = int(num2)
 
-    # Convert the result back to string and pad with zeroes up to the desired length
-    result_str = str(result_int).zfill(desired_length)
-    final_str = string_part+result_str
+        # Perform the addition
+        result_int = num1_int + num2_int
+
+        # Convert the result back to string and pad with zeroes up to the desired length
+        result_str = str(result_int).zfill(desired_length)
+        final_str = string_part+result_str
 
     formatted_data=[]
     for item in data1:
@@ -60,8 +89,84 @@ def invoice_page():
 
         global global_data 
         global_data= json_string
-   
-    return render_template("invoice.html", data=data, data1=json_string, Uname=current_user, inv=final_str, allInvoices=ainv )
+    print(final_str)
+    return render_template("invoice.html", data=data, data1=json_string, Uname=current_user, allInvoices=ainv, inv=final_str)
+
+@routeGeneratePDF_bp.route('/preview-quotation', methods=['GET', 'POST'])
+@login_required
+def preview_quotation():
+    if request.method == 'POST':
+        # Collect the necessary information from the form
+        session['qIT'] = request.form.get('it_contact')
+        session['qContact'] = request.form.get('contact_person')
+        session['qEntity']= request.form.get('mission_entity')
+        session['qDept'] = request.form.get('mission_dept')
+        session['qAdd']=request.form.get('address')
+        # ... collect other details
+        description = []
+        price=[]
+        quantities = []
+        total_price = []
+        items = []
+        itemids = []
+        # Iterate over the items in the data
+        for item in request.form:
+            # Check if the field ID ends with '_checkbox'
+            if item.endswith('_input'):
+                # Extract the ID without the '_checkbox' suffix
+                field_id = item[:-6]
+
+                # Retrieve the value of the checkbox
+                value = request.form.get(item)
+                value1= request.form.get(f"{field_id}_price")
+                value2= request.form.get(f"{field_id}_id")
+                # Retrieve the value of the corresponding quantity field
+                quantity = request.form.get(f"{field_id}_quantity")
+                if quantity and quantity.strip():
+                
+                    # Append the values to the respective lists
+                    uitems = {'description' : value, 'price' : value1, 'quantity': quantity, 'itemids' :value2}
+                    items.append(uitems)
+                    dump = json.dumps(items)
+                    json_string=json.loads(dump)
+                    description.append(value)
+                    price.append(value1)
+                    quantities.append(quantity)
+                    itemids.append(value2)
+        total_cost = 0
+        for x, y in zip(price, quantities):
+            decX=decimal.Decimal(x)
+            intY=int(y)
+            results= decX * intY
+            total_price.append(results)
+        
+        for item in total_price:
+            total_cost += item
+
+        session['totalprice'] = total_price
+        session['totalcost'] = total_cost
+        session['dlist'] = json_string
+        session['dateToday'] = datetime.date.today().strftime("%d/%m/%Y")
+
+        #entry=invoice_entry()
+        # Render the preview template with the collected datapython
+        return render_template('quotation_preview.html')
+
+    return render_template('input.html')
+
+@routeGeneratePDF_bp.route('/get-quoted-items', methods=['POST'])
+@login_required
+def get_quotedItems():
+    quotationNo=request.form.get('id')
+    quotationNo=(quotationNo,)
+    print(quotationNo)
+    data_fetcher = DataFetcher(database=current_app.config['database'])
+    quotedItems = data_fetcher.fetch_data(allQuotedItems, quotationNo)
+    quotation = data_fetcher.fetch_row(quotationInfo, quotationNo)
+    formatQuotedItems= [{'data': list(row)} for row in quotedItems]
+    catalog = data_fetcher.fetch_data(itemCatalog)
+    print(catalog)
+    return jsonify(qItems=formatQuotedItems, qNo=quotationNo, quote=quotation, catalog=catalog)
 
 @routeGeneratePDF_bp.route('/preview-invoice', methods=['GET', 'POST'])
 @login_required
@@ -118,11 +223,55 @@ def preview_invoice():
         session['dateToday'] = datetime.date.today().strftime("%d/%m/%Y")
         print(session['totalprice'])
 
-        entry=invoice_entry()
+        # entry=invoice_entry()
         # Render the preview template with the collected datapython
         return render_template('invoice_preview.html')
 
     return render_template('input.html')
+
+@routeGeneratePDF_bp.route('/quotation-entry')
+@login_required
+def quote_entry():
+    comments=""
+    missContact =  session['qContact']
+    itContact = session['qIT']
+    billTo= session['qEntity']
+    dept= session['qDept']
+    db_conn = current_app.config['database']
+    data_fetcher = DataFetcher(database=db_conn)
+    data=(billTo, dept,  missContact, itContact, session['totalcost'], comments)
+    #Save reponse from database entry
+    print(itContact)
+    entry_result=data_fetcher.insert_data(insertQuotation, data)
+    
+    #Upon succesfull entry, insert quote details into database
+    if entry_result== True:
+        try:
+            quote=data_fetcher.fetch_row(lastQuote)
+            quotationNo=quote[0]
+            
+            for item in session['dlist']:
+                quantity = item['quantity']
+                itemID = item['itemids']
+                # SQL query to insert data into the database
+                data = (quotationNo, itemID, quantity)
+                success=data_fetcher.insert_data(insertQuoteDetails, data)
+
+                if success != True:
+                    data_fetcher.delete_data(delete_qDetails, quotationNo)
+                    data_fetcher.delete_data(delete_quotation, quotationNo)
+
+        except Exception as e:
+        # Handle the exception, log it, or take appropriate action
+            db_conn.connection.rollback()
+            print("Exception occurred during transaction:", str(e))
+        finally:
+            db_conn.close()
+        return redirect(url_for('route_generatePDF.quote'))
+    else:
+        flash('There was an error when inserting into the database!')
+        return redirect(url_for('route_generatePDF.quote'))
+
 @routeGeneratePDF_bp.route('/invoice-entry')
 @login_required
 def invoice_entry():
@@ -154,7 +303,7 @@ def invoice_entry():
                 data = (quantity, description, unit_price, total_price, session['inv'])
                 success=data_fetcher.insert_data(inv_itm, data)
                     
-                if not success:
+                if success != True:
                     data_fetcher.delete_data(delete_details, [session['inv']])
                     data_fetcher.delete_data(delete_invoice, [session['inv']])
 
@@ -167,7 +316,7 @@ def invoice_entry():
         return success
     else:
         flash('There was an error when inserting into the database!')
-        return redirect(url_for('invoice_page'))
+        return redirect(url_for('route_generatePDF.invoice_page'))
     
 @routeGeneratePDF_bp.route('/generate-pdf')
 @login_required
@@ -362,3 +511,19 @@ def download_pdf(inv):
         session['totalprice'].append(str(item[4]))
     print(session['totalprice'])
     return generate_pdf()
+
+@routeGeneratePDF_bp.route('/ammend-quotation', methods=['POST'])
+@login_required
+def ammend_quotation():
+    return "success"
+
+@routeGeneratePDF_bp.route('/edit-comment', methods=['POST'])
+@login_required
+def edit_comment():
+    comment = request.form['quotationComments']
+    quote = request.form['quoteToEdit']
+    data = (comment, quote)
+    db_conn = current_app.config['database']
+    data_fetcher = DataFetcher(database=db_conn)
+    data_fetcher.update_data(updateComment, data)
+    return "success"
