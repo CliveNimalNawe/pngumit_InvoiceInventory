@@ -6,10 +6,14 @@ from reportlab.pdfgen import canvas
 from io import BytesIO
 import json, decimal, os, datetime
 from data_fetch import DataFetcher
-from query import items, mission, lastInv, invoice, allQuotes, allInv, inv_itm, delete_details, delete_invoice, inv_basic, inv_details, add, insertQuotation, insertQuoteDetails, lastQuote, delete_qDetails, delete_quotation, allQuotedItems, quotationInfo, itemCatalog, updateComment
+from query import items, mission, lastInv, invoice, allQuotes, allInv, inv_itm, delete_details, delete_invoice, inv_basic, inv_details, add, insertQuotation, insertQuoteDetails, insertQuoteDetails2, lastQuote, delete_qDetails, delete_qEntry, delete_quotation, allQuotedItems, quotationInfo, itemCatalog, updateComment,totalCostQuotedItems, getQNumber
 
 routeGeneratePDF_bp=Blueprint('route_generatePDF', __name__)
 
+def totalCost(quotationNumber):
+    data_fetcher=DataFetcher(current_app.config['database'])
+    data_fetcher.update_data(totalCostQuotedItems, (quotationNumber, quotationNumber))
+    return "success?"
 @routeGeneratePDF_bp.route("/quote-page")
 @login_required
 def quote():
@@ -159,13 +163,11 @@ def preview_quotation():
 def get_quotedItems():
     quotationNo=request.form.get('id')
     quotationNo=(quotationNo,)
-    print(quotationNo)
     data_fetcher = DataFetcher(database=current_app.config['database'])
     quotedItems = data_fetcher.fetch_data(allQuotedItems, quotationNo)
     quotation = data_fetcher.fetch_row(quotationInfo, quotationNo)
     formatQuotedItems= [{'data': list(row)} for row in quotedItems]
     catalog = data_fetcher.fetch_data(itemCatalog)
-    print(catalog)
     return jsonify(qItems=formatQuotedItems, qNo=quotationNo, quote=quotation, catalog=catalog)
 
 @routeGeneratePDF_bp.route('/preview-invoice', methods=['GET', 'POST'])
@@ -512,10 +514,34 @@ def download_pdf(inv):
     print(session['totalprice'])
     return generate_pdf()
 
-@routeGeneratePDF_bp.route('/ammend-quotation', methods=['POST'])
+@routeGeneratePDF_bp.route('/amend-remove-item', methods=['POST'])
 @login_required
-def ammend_quotation():
+def amend_remove_item():
+    qItemID=request.form.get('id')
+    data_fetcher=DataFetcher(current_app.config['database'])
+    print(qItemID)
+    qNo=data_fetcher.fetch_row(getQNumber, (qItemID,))
+    data_fetcher.delete_data(delete_qEntry, (qItemID,))
+    totalCost(qNo[0])
+    message="success"
+    print(message)
+    return jsonify(response=message)
+
+@routeGeneratePDF_bp.route('/amend-add-item', methods=['POST'])
+@login_required
+def amend_add_item():
+    quotationNumber = request.form['quoteToEdit2']
+    itemCode = request.form['selectDropdown']
+    price = request.form['priceField']
+    quantity = request.form['quantity']
+    itemTotal = float(price) * float(quantity)
+    data = (quotationNumber, itemCode, quantity, price, itemTotal)
+    db_conn = current_app.config['database']
+    data_fetcher=DataFetcher(db_conn)
+    data_fetcher.insert_data(insertQuoteDetails2, data)
+    totalCost(quotationNumber)
     return "success"
+
 
 @routeGeneratePDF_bp.route('/edit-comment', methods=['POST'])
 @login_required

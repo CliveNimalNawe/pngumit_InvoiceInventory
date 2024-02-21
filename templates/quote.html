@@ -69,7 +69,7 @@
           
           <h3>Total:&nbsp;PGK <span id="totalAmount" style="color: red;"></span></h3>
 
-          <form method="POST" action="{{url_for('route_generatePDF.edit_comment')}}" class="comment_form" id="form3">
+          <form method="POST" action="#" class="comment_form" id="form3">
             <input type="number" value="" id="quoteToEdit" name="quoteToEdit" hidden>
             <p><label for="quotationComments">Comments:</label></p>
             <textarea id="quotationComments" name="quotationComments" rows="4" cols="50"></textarea>
@@ -77,14 +77,15 @@
             <input type="submit"> 
           </form>
 
-          <form method="POST" action="{{url_for('route_generatePDF.ammend_quotation')}}" class="quote_form" id="form2">
+          <form method="POST" action="{{url_for('route_generatePDF.amend_add_item')}}" class="quote_form" id="form2">
+            <input type="number" value="" id="quoteToEdit2" name="quoteToEdit2" hidden>
           <h3>Add Another Item</h3>
-          <select id="selectDropdown">
+          <select id="selectDropdown" name="selectDropdown">
             <option value="" disabled selected>Choose</option>
           </select>
-          <input type="text" id="priceField" disabled>
-          <input type="number" id="quantity" required>
-          <input type="submit">
+          <input type="text" id="priceField" name="priceField" readonly>
+          <input type="number" id="quantity" name="quantity" required>
+          <input type="submit" value="Submit">
           </form>
         </div>
 
@@ -110,8 +111,9 @@
                   // $('#myModal').css('display', 'block');
                   $('#quotationNo').text(response.qNo);
                   $('#totalAmount').text(response.quote[6]);
-                  $('#quotationComments').text(response.quote[7]);
+                  $('#quotationComments').val(response.quote[7]);
                   $('#quoteToEdit').val(response.qNo);
+                  $('#quoteToEdit2').val(response.qNo);
                   var tbody = $('#data-table tbody');
                   tbody.empty(); // Clear any previous content
 
@@ -127,7 +129,8 @@
                       else if (index == 8){
                         tr.append(td);
                         td= $('<td>');
-                        var link = $('<a>').attr('href', "{{ url_for('route_generatePDF.download_pdf', inv='test')}}").text("Remove");
+                        var id = row.data[0];
+                        var link = $('<a>').attr({'href': '#','data-id': id, 'class': 'removeLink'}).text("Remove");
                         td.append(link);
                         tr.append(td);
                       }
@@ -173,13 +176,14 @@
         // Close the modal when the close button (×) is clicked
       document.getElementsByClassName('close')[0].addEventListener('click', function() {
           document.getElementById('myModal').style.display = 'none';
+          window.location.href = "/quote-page";
       });
 
       document.getElementById('form3').addEventListener('submit', function(event){
         event.preventDefault();
         //var theForm = document.get
         let formData= new FormData(document.getElementById('form3'));
-        console.log(formData);
+        console.log("Test", formData);
         fetch('/edit-comment', {
           method: 'POST',
           body: formData
@@ -187,7 +191,7 @@
         .then(response => response.text())
         .then(data =>{
           if (data.trim()==="success"){
-            $('amendLink').click();
+            $('.amendLink').click();
           }
           else{
             console.log(data.trim());
@@ -195,7 +199,48 @@
         })
 
       });
+      document.getElementById('form2').addEventListener('submit', function(event){
+        event.preventDefault();
+        //var theForm = document.get
+        let formData= new FormData(document.getElementById('form2'));
+        formData.forEach(function(value, key) {
+          console.log(key, value);
+        });
 
+        fetch('/amend-add-item', {
+          method: 'POST',
+          body: formData
+        })
+        .then(response => response.text())
+        .then(data =>{
+          if (data.trim()==="success"){
+            $('.amendLink').click();
+          }
+          else{
+            console.log(data.trim());
+          }
+        })
+
+      });
+    
+      $(document).on('click', '.removeLink', function(event) {
+            event.preventDefault(); // Prevent the default behavior of the link
+            var id = $(this).data('id'); // Get the ID associated with the link
+            console.log("in th remove link")
+            $.ajax({
+                url: '/amend-remove-item', //Flask route to fetch data
+                method: 'POST',
+                data: { id: id }, // Send the ID to your Flask route
+                success: function(response) {
+                  // Display the fetched data in the modal
+                  $('.amendLink').click();
+                },
+                error: function(error) {
+                    console.log(error);
+                }
+            });
+        });
+        
     });
 </script>
 </div>
