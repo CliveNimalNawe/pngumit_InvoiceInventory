@@ -378,9 +378,8 @@ def download_quote_pdf(quote):
     with DataFetcher(current_app.config['database']) as data_fetcher:
         quote_details=data_fetcher.fetch_row(quotationInfo, [quote])
         quoted_items=data_fetcher.fetch_data(allQuotedItems, [quote])
-    print(quoted_items)
-    print(quote_details)
-    quotationNo, date, session['bill'], session['dept'], session['missContact'], session['it'], total, comment = quote_details
+
+    quotationNo, date, session['bill'], session['dept'], session['missContact'], session['it'], total, session['comments'] = quote_details
     address=data_fetcher.fetch_row(add, (session['bill'],))
     session['inv']=str(quotationNo).zfill(6)
     session['add']=address[2]
@@ -392,14 +391,13 @@ def download_quote_pdf(quote):
 
     for item in quoted_items:
         item_dict={
-            'description':item[6]+"-"+item[7]+""+item[8],
+            'itemCode': str(item[2]),
+            'description':item[7]+" "+item[6]+" - "+item[8],
             'price': str(item[4]),
             'quantity': str(item[3])
         }
         session['dlist'].append(item_dict)
         session['totalprice'].append(str(item[5]))
-
-    print(session['totalprice'])
 
     return generate_pdf()
 
@@ -490,13 +488,14 @@ def generate_pdf():
         c.line(40, 515, 572, 515)
 
         #Format list for table data
-        data = [['Quantity', 'Description', 'Unit Price', 'Total Price']]
+        data = [['Quantity', 'Item Code','Description', 'Unit Price', 'Total Price']]
         for index, item in enumerate(session['dlist']):
+            item_code=item['itemCode']
             description = item['description'].title()
             price = 'PGK '+item['price']
             quantity = item['quantity']
             total_price = 'PGK '+session['totalprice'][index] if index < len(session['totalprice']) else ""
-            data.append([quantity, description, price, total_price])
+            data.append([quantity,item_code, description, price, total_price])
 
         # Set font size and leading for the table
         font_size = 10
@@ -507,7 +506,7 @@ def generate_pdf():
         y = 500
 
         # Define the cell widths for each column
-        column_widths = [70, 250, 105, 105]
+        column_widths = [60, 60, 230, 90, 90]
 
         # Draw the table headers
         c.setFont("Helvetica-Bold", font_size)
@@ -519,11 +518,12 @@ def generate_pdf():
         for i, row in enumerate(data[1:], start=1):
             for j, cell in enumerate(row):
                 c.drawString(x + sum(column_widths[:j]), y - (i * leading)-5, cell)
-                if i == len(data) - 2 and j == len(row)-2:
-                    c.drawString(x + sum(column_widths[:j]), y - (i * leading)-50, "Total Cost:")
-                    c.line(x + sum(column_widths[:j]), y - (i * leading)-55, 570, y - (i * leading)-55)
-                elif i == len(data) - 2 and j == len(row)-1:
-                    c.drawString(x + sum(column_widths[:j]), y - (i * leading)-50, 'PGK '+session['totalcost'])
+
+                if i == len(data) - 1 and j == len(row)-2:
+                    c.drawString(x + sum(column_widths[:j]), y - (i * leading)-30, "Total Cost:")
+                    c.line(x + sum(column_widths[:j]), y - (i * leading)-35, 570, y - (i * leading)-35)
+                elif i == len(data) - 1 and j == len(row)-1:
+                    c.drawString(x + sum(column_widths[:j]), y - (i * leading)-30, 'PGK '+session['totalcost'])
                 else:
                     pass
                 
@@ -548,8 +548,23 @@ def generate_pdf():
         c.setFillColor('#FCFCCC')
         c.rect(450, 40*0.75, 132, 120, fill=True, stroke=False)
 
-        c.setFontSize(12)
+        #Create a text object to wrap comment text in box
+        max_width=330
         c.setFillColor('black')
+        text_object=c.beginText(120, 110)
+        words=session['comments'].split()
+        line=""
+
+        for word in words:
+            if c.stringWidth(line+word)<=max_width:
+                line+=word+" "
+            else:
+                text_object.textLine(line)
+                line= word + " "
+
+        text_object.textLine(line)
+        c.drawText(text_object)
+        c.setFontSize(12)
         c.drawString( 40, 135, "Payment")
         c.drawString( 40, 110, "Comments:")
         c.drawString( 40, 65, "A/C Name:")
@@ -561,7 +576,6 @@ def generate_pdf():
 
         # Save the canvas contents
         c.save()
-        print(letter)
         # Reset the buffer position to the beginning
         buffer.seek(0)
 
