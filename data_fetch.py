@@ -1,32 +1,47 @@
+import logging
 #This class is for functions that will retrieve data from the database.
 class DataFetcher:
     #Constructor
     def __init__(self, database):
         self.database = database
+        self.logger = logging.getLogger(__name__)
 
     #Method to retrieve data tuples from database
     def fetch_data(self, query, datas=None):
         self.database.connect()
         cursor = self.database.connection.cursor()
-        if datas is None:
-            cursor.execute(query)
+        try:
+            if datas is None:
+                cursor.execute(query)
 
-        else:
-            cursor.execute(query, datas)
-        data = cursor.fetchall()
-        cursor.close()
-        self.database.close()
+            else:
+                cursor.execute(query, datas)
+
+            data = cursor.fetchall()
+            self.logger.info(f"Fetched data: {data}")
+        except Exception as e:
+            self.logger.error(f"Error during fetch_data: {e}")
+            raise
+            
+        finally:
+            cursor.close()
+            self.database.close()
+            self.logger.info("Connection closed")
+
         return data
+            
     #Method to retrieve single row from the database
     def fetch_row(self, query, data=None):
         self.database.connect()
         cursor = self.database.connection.cursor()
         if data is None:
             cursor.execute(query)
+            row = cursor.fetchone()
         else:
             cursor.execute(query, data)
+            row = cursor.fetchone()
 
-        row = cursor.fetchone()
+        #row = cursor.fetchone()
         cursor.close()
         self.database.close()
         return row
@@ -119,4 +134,14 @@ class DataFetcher:
 
         finally:
             self.database.close()
-   
+
+    def __enter__(self):
+        self.database.connect()
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        try:
+            if self.database.connection.is_connected():
+                self.database.connection.close()
+        except Exception as e:
+            self.logger.error(f"Error during __exit__: {e}")

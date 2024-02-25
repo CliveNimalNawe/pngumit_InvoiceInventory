@@ -10,6 +10,10 @@ from data_fetch import DataFetcher
 from query import qty_query, id_query, names, inventory, delete_details, delete_invoice, entities, newEntity, update, itemCatalog, newItem
 import bcrypt as hash
 from routes.route_generatePDF import routeGeneratePDF_bp as generatePDF
+import logging
+
+# Configure logging to write messages to a file
+logging.basicConfig(filename='example.log', level=logging.DEBUG)
 
 
 def create_app():
@@ -67,7 +71,7 @@ def create_app():
                     login_user(user)
                     fnameLname = data_fetcher.fetch_row(names % username)
                     session['userName'] = fnameLname[0] + ' ' + fnameLname[1]
-                    print(current_user.id)
+                    #print(current_user.id)
                     return redirect(url_for('home'))
                 else:
                     error_message = 'Invalid username or password'

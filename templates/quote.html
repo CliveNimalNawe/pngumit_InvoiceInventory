@@ -33,7 +33,7 @@
           <td>{{item[5]}}</td>
           <td>PGK {{item[6]}}</td>
           <td>{{item[7]}} </td>
-          <td><a href="#" class="amendLink" data-id="{{id_value}}">Amend</a>&nbsp;<a href="{{ url_for('route_generatePDF.download_pdf', inv=item[0])}}">Download</a></td>
+          <td><a href="#" class="amendLink" data-id="{{id_value}}">Amend</a>&nbsp;<a href="{{ url_for('route_generatePDF.download_quote_pdf', quote=item[0])}}">Download</a></td>
         </tr>
         {% endfor %}
     </tbody>
@@ -96,10 +96,11 @@
     // jQuery to handle link click event
     $(document).ready(function() {
 
-
+        var currentAmendLinkID;
         $('.amendLink').on('click', function(event) {
             event.preventDefault(); // Prevent the default behavior of the link
             var id = $(this).data('id'); // Get the ID associated with the link
+            currentAmendLinkID=id;
             $.ajax({
                 url: '/get-quoted-items', //Flask route to fetch data
                 method: 'POST',
@@ -191,7 +192,7 @@
         .then(response => response.text())
         .then(data =>{
           if (data.trim()==="success"){
-            $('.amendLink').click();
+            $('.amendLink[data-id="'+currentAmendLinkID+'"]').click();
           }
           else{
             console.log(data.trim());
@@ -214,7 +215,7 @@
         .then(response => response.text())
         .then(data =>{
           if (data.trim()==="success"){
-            $('.amendLink').click();
+            $('.amendLink[data-id="'+currentAmendLinkID+'"]').click();
           }
           else{
             console.log(data.trim());
@@ -233,7 +234,7 @@
                 data: { id: id }, // Send the ID to your Flask route
                 success: function(response) {
                   // Display the fetched data in the modal
-                  $('.amendLink').click();
+                  $('.amendLink[data-id="'+currentAmendLinkID+'"]').click();
                 },
                 error: function(error) {
                     console.log(error);
